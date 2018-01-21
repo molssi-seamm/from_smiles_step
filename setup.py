@@ -57,7 +57,7 @@ setup(
     setup_requires=setup_requirements,
     entry_points={
         'molssi.workflow.tk': [
-            'fromSMILESStep = from_smiles_step:fromSMILESStep',
+            'FromSMILESStep = from_smiles_step:FromSMILESStep',
         ],
     },
 )

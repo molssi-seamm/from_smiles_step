@@ -7,7 +7,7 @@ nodes."""
 import from_smiles_step
 
 
-class fromSMILESStep(object):
+class FromSMILESStep(object):
     my_description = {
         'description':
         'Creates a 3D molecular structure from a SMILES string.',
@@ -25,7 +25,7 @@ class fromSMILESStep(object):
     def description(self):
         """Return a description of what this extension does
         """
-        return fromSMILESStep.my_description
+        return FromSMILESStep.my_description
 
     def factory(self, graphical=False, workflow=None, canvas=None, **kwargs):
         """Return the node object or graphical node object"""
