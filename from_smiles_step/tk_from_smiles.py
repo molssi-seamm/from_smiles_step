@@ -2,17 +2,13 @@
 """The graphical part of a fromSMILES node"""
 
 import molssi_workflow
-import from_smiles_step
 import tkinter as tk
 import tkinter.ttk as ttk
 
 
 class TkFromSMILES(molssi_workflow.TkNode):
-    """node_class is the class of the 'real' node that this
-    class is the Tk graphics partner for
+    """The graphical part of the From SMILES step
     """
-
-    node_class = from_smiles_step.FromSMILESNode
 
     def __init__(self, node=None, canvas=None, x=None, y=None, w=None, h=None):
         '''Initialize a node
