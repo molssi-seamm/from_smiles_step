@@ -4,9 +4,7 @@
 """Tests for `from_smiles_step` package."""
 
 import pytest
-
-
-from from_smiles_step import from_smiles_step
+from from_smiles_step import from_smiles_step  # nopep8
 
 
 @pytest.fixture
