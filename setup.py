@@ -28,7 +28,7 @@ test_requirements = [
 setup(
     name='from_smiles_step',
     version='0.1.0',
-    description="The From SMILES step implements a workflow step to create a structure from a SMILES string",
+    description="The From SMILES step creates a structure from a SMILES string",  # nopep8
     long_description=readme + '\n\n' + history,
     author="Paul Saxe",
     author_email='psaxe@molssi.org',
@@ -56,7 +56,10 @@ setup(
     tests_require=test_requirements,
     setup_requires=setup_requirements,
     entry_points={
-        'molssi.workflow.tk': [
+        'org.molssi.workflow': [
+            'FromSMILESStep = from_smiles_step:FromSMILESStep',
+        ],
+        'org.molssi.workflow.tk': [
             'FromSMILESStep = from_smiles_step:FromSMILESStep',
         ],
     },

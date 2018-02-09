@@ -33,3 +33,11 @@ class FromSMILESStep(object):
             return from_smiles_step.TkFromSMILES(canvas=canvas, **kwargs)
         else:
             return from_smiles_step.FromSMILES(workflow=workflow, **kwargs)
+
+    def create_node(self, workflow=None, **kwargs):
+        """Return a new node object"""
+        return from_smiles_step.FromSMILES(workflow=workflow, **kwargs)
+
+    def create_tk_node(self, canvas=None, **kwargs):
+        """Return the graphical Tk node object"""
+        return from_smiles_step.TkFromSMILES(canvas=canvas, **kwargs)
