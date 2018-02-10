@@ -10,12 +10,14 @@ class TkFromSMILES(molssi_workflow.TkNode):
     """The graphical part of the From SMILES step
     """
 
-    def __init__(self, node=None, canvas=None, x=None, y=None, w=None, h=None):
+    def __init__(self, tk_workflow=None, node=None, canvas=None,
+                 x=None, y=None, w=None, h=None):
         '''Initialize a node
 
         Keyword arguments:
         '''
-        super().__init__(node=node, canvas=canvas, x=x, y=y, w=w, h=h)
+        super().__init__(tk_workflow=tk_workflow, node=node,
+                         canvas=canvas, x=x, y=y, w=w, h=h)
 
     def right_click(self, event):
         """Probably need to add our dialog...

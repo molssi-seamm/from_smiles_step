@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class FromSMILES(molssi_workflow.Node):
-    def __init__(self, workflow=None, gui_object=None, extension=None):
+    def __init__(self, workflow=None, extension=None):
         '''Initialize a specialized start node, which is the
         anchor for the graph.
 
@@ -20,7 +20,7 @@ class FromSMILES(molssi_workflow.Node):
         logger.debug('Creating FromSMILESNode {}'.format(self))
 
         super().__init__(workflow=workflow, title='from SMILES',
-                         gui_object=gui_object, extension=extension)
+                         extension=extension)
 
         self.smiles_string = ''
 
