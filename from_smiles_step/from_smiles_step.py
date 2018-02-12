@@ -27,13 +27,6 @@ class FromSMILESStep(object):
         """
         return FromSMILESStep.my_description
 
-    def factory(self, graphical=False, workflow=None, canvas=None, **kwargs):
-        """Return the node object or graphical node object"""
-        if graphical:
-            return from_smiles_step.TkFromSMILES(canvas=canvas, **kwargs)
-        else:
-            return from_smiles_step.FromSMILES(workflow=workflow, **kwargs)
-
     def create_node(self, workflow=None, **kwargs):
         """Return a new node object"""
         return from_smiles_step.FromSMILES(workflow=workflow, **kwargs)
