@@ -4,6 +4,10 @@
 Installation
 ============
 
+Note: It is possible that under MacOS you need to have gfortran installed in order to have the runtime
+libraries needed from some aspects of OpenBabel to function properly. This needs to be checked more
+carefully, but it seemd that creating structures from SMILES functioned, but gave structures with
+atoms close to each other until gfotran was installed.
 
 Stable release
 --------------
