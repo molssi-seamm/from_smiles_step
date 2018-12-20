@@ -117,10 +117,11 @@ class FromSMILES(molssi_workflow.Node):
         units['coordinates'] = 'angstrom'
 
         bonds = structure['bonds'] = []
-        data_in = tmp['bonds']
-        for i, j, order in zip(data_in['aid1'], data_in['aid2'],
-                               data_in['order']):
-            bonds.append((i, j, order))
+        if 'bonds' in tmp:
+            data_in = tmp['bonds']
+            for i, j, order in zip(data_in['aid1'], data_in['aid2'],
+                                   data_in['order']):
+                bonds.append((i, j, order))
 
         logger.debug('\n***Structure dict')
         logger.debug(pprint.pformat(structure))
