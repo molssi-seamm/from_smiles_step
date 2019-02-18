@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """a node to create a structure from a SMILES string"""
 
+import molssi_util
 import molssi_workflow
 import molssi_workflow.data
-import json
 import logging
 import pprint
 
@@ -23,6 +23,8 @@ class FromSMILES(molssi_workflow.Node):
                          extension=extension)
 
         self.smiles_string = ''
+        self.minimize = False
+        self.ff = 'UFF'
 
     def run(self):
         """Create 3-D structure from a SMILES string
@@ -37,25 +39,20 @@ class FromSMILES(molssi_workflow.Node):
         OpenBabel will not directly convert SMILES to SMILES with
         explicit H's, we use a molfile as an intermediate.
 
-        Equivalent command line: ::
-            echo 'CCO' | obabel --gen3d -ismi -omol | obabel -imol -osmi -xh | obabel --gen3d -ismi -opcjson
-        """  # nopep8
+        Equivalent command line is like: ::
+            echo 'CCO' | obabel --gen3d -ismi -omol | obabel -imol -osmi -xh\
+                  | obabel --gen3d -ismi -opcjson
+        """
 
         if self.smiles_string is None:
             return None
 
-        # p = subprocess.run(
-        #     ['obabel', '--gen3d', '-ismi', '-opcjson'],
-        #     input=self.smiles_string,
-        #     universal_newlines=True,
-        #     stdout=subprocess.PIPE,
-        #     stderr=subprocess.PIPE)
-
         local = molssi_workflow.ExecLocal()
 
+        smiles = molssi_workflow.workflow_variables.value(self.smiles_string)
         result = local.run(
             cmd=['obabel', '--gen3d', '-ismi', '-omol'],
-            input_data=self.smiles_string
+            input_data=smiles
         )
 
         logger.log(0, pprint.pformat(result))
@@ -67,10 +64,10 @@ class FromSMILES(molssi_workflow.Node):
         logger.debug('***Intermediate molfile from obabel')
         logger.debug(result['stdout'])
 
-        molfile = result['stdout']
+        mol = result['stdout']
         result = local.run(
             cmd=['obabel', '-imol', '-osmi', '-xh'],
-            input_data=molfile
+            input_data=mol
         )
 
         logger.log(0, pprint.pformat(result))
@@ -83,45 +80,68 @@ class FromSMILES(molssi_workflow.Node):
         logger.debug('***smiles with Hs from obabel')
         logger.debug(smiles)
 
-        result = local.run(
-            cmd=['obabel', '--gen3d', '-ismi', '-opcjson'],
-            input_data=smiles
-        )
+        if self.minimize:
+            # from SMILES to mol2
+            result = local.run(
+                cmd=['obabel', '--gen3d', '-ismi', '-omol2'],
+                input_data=smiles
+            )
 
-        logger.log(0, pprint.pformat(result))
+            # logger.log(0, pprint.pformat(result))
+            logger.debug('***Intermediate mol2 file from obabel')
+            logger.debug(result['stdout'])
 
-        if int(result['stderr'].split()[0]) == 0:
-            molssi_workflow.data.structure = None
-            return None
+            if int(result['stderr'].split()[0]) == 0:
+                molssi_workflow.data.structure = None
+                return None
 
-        logger.debug('***Structure from obabel')
-        logger.debug(result['stdout'])
+            files = {}
+            files['input.mol2'] = result['stdout']
+            
+            # minimize
+            result = local.run(
+                cmd=['obminimize', '-o', 'mol2',
+                     '-ff', self.ff, 'input.mol2'],
+                files=files
+            )
 
-        tmp_data = json.loads(result['stdout'])
-        tmp = tmp_data['PC_Compounds'][0]
+            # logger.log(0, pprint.pformat(result))
+            logger.debug('***Intermediate mol2 from obminimize')
+            logger.debug(result['stdout'])
+            mol2 = result['stdout']
 
-        structure = molssi_workflow.data.structure = {}
+            result = local.run(
+                cmd=['obabel', '-imol2', '-omol', '-x3'],
+                input_data=mol2
+            )
+            if int(result['stderr'].split()[0]) == 0:
+                molssi_workflow.data.structure = None
+                return None
+
+            structure = molssi_util.molfile.to_molssi(result['stdout'])
+        else:
+            result = local.run(
+                cmd=['obabel', '--gen3d', '-ismi', '-omol', '-x3'],
+                input_data=smiles
+            )
+
+            logger.log(0, pprint.pformat(result))
+
+            if int(result['stderr'].split()[0]) == 0:
+                molssi_workflow.data.structure = None
+                return None
+
+            logger.debug('***Structure from obabel')
+            logger.debug(result['stdout'])
+
+            structure = molssi_util.molfile.to_molssi(result['stdout'])
+
         structure['periodicity'] = 0
-        atoms = structure['atoms'] = {}
-        data_in = tmp['atoms']
-        atoms['ids'] = data_in['aid']
-        elements = atoms['elements'] = []
-        for el in data_in['element']:
-            elements.append(el.title())
-
-        coordinates = atoms['coordinates'] = []
-        data_in = tmp['coords'][0]['conformers'][0]
-        for x, y, z in zip(data_in['x'], data_in['y'], data_in['z']):
-            coordinates.append((x, y, z))
+        # atoms['ids'] = data_in['aid']
         units = structure['units'] = {}
         units['coordinates'] = 'angstrom'
 
-        bonds = structure['bonds'] = []
-        if 'bonds' in tmp:
-            data_in = tmp['bonds']
-            for i, j, order in zip(data_in['aid1'], data_in['aid2'],
-                                   data_in['order']):
-                bonds.append((i, j, order))
+        molssi_workflow.data.structure = structure
 
         logger.debug('\n***Structure dict')
         logger.debug(pprint.pformat(structure))

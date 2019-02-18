@@ -2,6 +2,7 @@
 """The graphical part of a fromSMILES node"""
 
 import molssi_workflow
+import Pmw
 import tkinter as tk
 import tkinter.ttk as ttk
 
@@ -11,7 +12,7 @@ class TkFromSMILES(molssi_workflow.TkNode):
     """
 
     def __init__(self, tk_workflow=None, node=None, canvas=None,
-                 x=None, y=None, w=None, h=None):
+                 x=120, y=20, w=200, h=50):
         '''Initialize a node
 
         Keyword arguments:
