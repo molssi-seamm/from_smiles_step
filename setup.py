@@ -12,7 +12,11 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    # TODO: put package requirements here
+    'molssi_util',
+    'molssi_workflow',
+    'logging',
+    'pprint',
+    'Pmw'
 ]
 
 setup_requirements = [
