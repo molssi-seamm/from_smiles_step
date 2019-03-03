@@ -26,6 +26,34 @@ class FromSMILES(molssi_workflow.Node):
         self.minimize = False
         self.ff = 'UFF'
 
+    def describe(self, indent='', json_dict=None):
+        """Write out information about what this node will do
+        If json_dict is passed in, add information to that dictionary
+        so that it can be written out by the controller as appropriate.
+        """
+
+        next_node = super().describe(indent, json_dict)
+
+        indent += '    '
+        if self.smiles_string[0] == '$':
+            string = indent + (
+                "Create the structure from the SMILES in the variable"
+                " '{smiles}'"
+            )
+        else:
+            string = indent + (
+                "Create the structure from the SMILES '{smiles}'"
+            )
+            
+        self.job_output(
+            string.format(
+                smiles=self.smiles_string
+            )
+        )
+        self.job_output('')
+
+        return next_node
+
     def run(self):
         """Create 3-D structure from a SMILES string
 
@@ -44,12 +72,24 @@ class FromSMILES(molssi_workflow.Node):
                   | obabel --gen3d -ismi -opcjson
         """
 
+        next_node = super().run()
+
         if self.smiles_string is None:
             return None
 
         local = molssi_workflow.ExecLocal()
+        smiles = self.get_value(self.smiles_string)
 
-        smiles = molssi_workflow.workflow_variables.value(self.smiles_string)
+        # Print what we are doing
+        string = (
+            "    Creating the structure from the SMILES '{smiles}'"
+        )
+        self.log(
+            string.format(
+                smiles=smiles
+            )
+        )
+
         result = local.run(
             cmd=['obabel', '--gen3d', '-ismi', '-omol'],
             input_data=smiles
@@ -146,4 +186,15 @@ class FromSMILES(molssi_workflow.Node):
         logger.debug('\n***Structure dict')
         logger.debug(pprint.pformat(structure))
 
-        return super().run()
+        # Finish the output
+        string = (
+            "    Created a molecular structure with {n_atoms} atoms."
+        )
+        self.log(
+            string.format(
+                n_atoms=len(structure['atoms']['elements'])
+            )
+        )
+        
+        self.log('')
+        return next_node
