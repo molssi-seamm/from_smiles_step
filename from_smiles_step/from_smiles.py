@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 """a node to create a structure from a SMILES string"""
 
-import molssi_util
+import logging
 import molssi_workflow
 import molssi_workflow.data
-import logging
+import molssi_util
+import molssi_util.printing as printing
+from molssi_util.printing import FormattedText as __
 import pprint
 
 logger = logging.getLogger(__name__)
+job = printing.getPrinter()
+printer = printing.getPrinter('from_smiles')
 
 
 class FromSMILES(molssi_workflow.Node):
@@ -34,23 +38,19 @@ class FromSMILES(molssi_workflow.Node):
 
         next_node = super().describe(indent, json_dict)
 
-        indent += '    '
         if self.smiles_string[0] == '$':
-            string = indent + (
-                "Create the structure from the SMILES in the variable"
-                " '{smiles}'"
+            job.job(
+                __("Create the structure from the SMILES in the variable"
+                   " '{smiles}'",
+                   smiles=self.smiles_string,
+                   indent=self.indent + '    ')
             )
         else:
-            string = indent + (
-                "Create the structure from the SMILES '{smiles}'"
+            job.job(
+                __("Create the structure from the SMILES '{smiles}'",
+                   smiles=self.smiles_string,
+                   indent=self.indent + '    ')
             )
-            
-        self.job_output(
-            string.format(
-                smiles=self.smiles_string
-            )
-        )
-        self.job_output('')
 
         return next_node
 
@@ -72,7 +72,7 @@ class FromSMILES(molssi_workflow.Node):
                   | obabel --gen3d -ismi -opcjson
         """
 
-        next_node = super().run()
+        next_node = super().run(printer)
 
         if self.smiles_string is None:
             return None
@@ -81,13 +81,9 @@ class FromSMILES(molssi_workflow.Node):
         smiles = self.get_value(self.smiles_string)
 
         # Print what we are doing
-        string = (
-            "    Creating the structure from the SMILES '{smiles}'"
-        )
-        self.log(
-            string.format(
-                smiles=smiles
-            )
+        printer.important(
+            __("Creating the structure from the SMILES '{smiles}'",
+               smiles=smiles, indent=self.indent + '    ')
         )
 
         result = local.run(
@@ -187,14 +183,10 @@ class FromSMILES(molssi_workflow.Node):
         logger.debug(pprint.pformat(structure))
 
         # Finish the output
-        string = (
-            "    Created a molecular structure with {n_atoms} atoms."
+        printer.important(
+            __("    Created a molecular structure with {n_atoms} atoms.",
+               n_atoms=len(structure['atoms']['elements']),
+               indent=self.indent + '    ')
         )
-        self.log(
-            string.format(
-                n_atoms=len(structure['atoms']['elements'])
-            )
-        )
-        
-        self.log('')
+
         return next_node
