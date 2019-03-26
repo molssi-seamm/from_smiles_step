@@ -2,6 +2,7 @@
 """The graphical part of a fromSMILES node"""
 
 import molssi_workflow
+import molssi_util.molssi_widgets as mw
 import Pmw
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -32,42 +33,55 @@ class TkFromSMILES(molssi_workflow.TkNode):
     def edit(self):
         """Present a dialog for editing the SMILES string
         """
+        """Create the dialog!"""
+        if not self.dialog:
+            self.dialog = Pmw.Dialog(
+                self.toplevel,
+                buttons=('OK', 'Help', 'Cancel'),
+                defaultbutton='OK',
+                master=self.toplevel,
+                title='Edit Energy parameters',
+                command=self.handle_dialog)
+            self.dialog.withdraw()
 
-        dialog = tk.Toplevel()
-        self._tmp = {'dialog': dialog}
-        dialog.title('From SMILES...')
+            frame = ttk.Frame(self.dialog.interior())
+            frame.pack(expand=tk.YES, fill=tk.BOTH)
+            self['frame'] = frame
 
-        frame = ttk.Frame(dialog)
-        frame.pack(side='top', fill=tk.BOTH, expand=1)
-        smiles_label = ttk.Label(frame, text='SMILES string:')
-        smiles = ttk.Entry(frame)
-        self._tmp['smiles'] = smiles
-        smiles.insert(0, self.node.smiles_string)
-        smiles_label.grid(row=0, column=0)
-        smiles.grid(row=0, column=1, sticky=tk.E+tk.W)
+            # Create the widgets and grid them in
+            P = self.node.parameters
+            row = 0
+            widgets = []
+            for key in P:
+                self[key] = P[key].widget(frame)
+                widgets.append(self[key])
+                self[key].grid(row=row, column=0, sticky=tk.EW)
+                row += 1
 
-        button_box = ttk.Frame(dialog)
-        button_box.pack(side='bottom', fill=tk.BOTH)
+            mw.align_labels(widgets)
 
-        ok_button = ttk.Button(button_box, text="OK", command=self.handle_ok)
-        ok_button.pack(side='left')
-        help_button = ttk.Button(
-            button_box, text="Help", command=self.handle_help)
-        help_button.pack(side='left')
-        cancel_button = ttk.Button(
-            button_box, text="Cancel", command=self.handle_cancel)
-        cancel_button.pack(side='left')
+        self.dialog.activate(geometry='centerscreenfirst')
 
-    def handle_ok(self):
-        self.node.smiles_string = self._tmp['smiles'].get()
-        self._tmp['dialog'].destroy()
-        self._tmp = None
+    def handle_dialog(self, result):
 
-    def handle_help(self):
-        print('Help')
-        self._tmp['dialog'].destroy()
-        self._tmp = None
+        if result is None or result == 'Cancel':
+            self.dialog.deactivate(result)
+            return
 
-    def handle_cancel(self):
-        self._tmp['dialog'].destroy()
-        self._tmp = None
+        if result == 'Help':
+            # display help!!!
+            return
+
+        if result != "OK":
+            self.dialog.deactivate(result)
+            raise RuntimeError(
+                "Don't recognize dialog result '{}'".format(result))
+
+        self.dialog.deactivate(result)
+
+        # Shortcut for parameters
+        P = self.node.parameters
+
+        for key in P:
+            P[key].set_from_widget()
+

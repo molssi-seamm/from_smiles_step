@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """a node to create a structure from a SMILES string"""
 
+import from_smiles_step
 import logging
 import molssi_workflow
 import molssi_workflow.data
@@ -26,9 +27,7 @@ class FromSMILES(molssi_workflow.Node):
         super().__init__(workflow=workflow, title='from SMILES',
                          extension=extension)
 
-        self.smiles_string = ''
-        self.minimize = False
-        self.ff = 'UFF'
+        self.parameters = from_smiles_step.FromSMILES_Parameters()
 
     def describe(self, indent='', json_dict=None):
         """Write out information about what this node will do
@@ -38,18 +37,18 @@ class FromSMILES(molssi_workflow.Node):
 
         next_node = super().describe(indent, json_dict)
 
-        if self.smiles_string[0] == '$':
+        P = self.parameters.values_to_dict()
+
+        if P['smiles string'][0] == '$':
             job.job(
                 __("Create the structure from the SMILES in the variable"
-                   " '{smiles}'",
-                   smiles=self.smiles_string,
-                   indent=self.indent + '    ')
+                   " '{smiles string}'",
+                   **P, indent=self.indent + '    ')
             )
         else:
             job.job(
-                __("Create the structure from the SMILES '{smiles}'",
-                   smiles=self.smiles_string,
-                   indent=self.indent + '    ')
+                __("Create the structure from the SMILES '{smiles string}'",
+                   **P, indent=self.indent + '    ')
             )
 
         return next_node
@@ -74,11 +73,15 @@ class FromSMILES(molssi_workflow.Node):
 
         next_node = super().run(printer)
 
-        if self.smiles_string is None:
+        P = self.parameters.current_values_to_dict(
+            context=molssi_workflow.workflow_variables._data
+        )
+
+        if P['smiles string'] is None or P['smiles string'] == '':
             return None
 
         local = molssi_workflow.ExecLocal()
-        smiles = self.get_value(self.smiles_string)
+        smiles = P['smiles string']
 
         # Print what we are doing
         printer.important(
@@ -116,7 +119,7 @@ class FromSMILES(molssi_workflow.Node):
         logger.debug('***smiles with Hs from obabel')
         logger.debug(smiles)
 
-        if self.minimize:
+        if P['minimize']:
             # from SMILES to mol2
             result = local.run(
                 cmd=['obabel', '--gen3d', '-ismi', '-omol2'],
@@ -137,7 +140,7 @@ class FromSMILES(molssi_workflow.Node):
             # minimize
             result = local.run(
                 cmd=['obminimize', '-o', 'mol2',
-                     '-ff', self.ff, 'input.mol2'],
+                     '-ff', P['forcefield'], 'input.mol2'],
                 files=files
             )
 
@@ -173,7 +176,6 @@ class FromSMILES(molssi_workflow.Node):
             structure = molssi_util.molfile.to_molssi(result['stdout'])
 
         structure['periodicity'] = 0
-        # atoms['ids'] = data_in['aid']
         units = structure['units'] = {}
         units['coordinates'] = 'angstrom'
 
