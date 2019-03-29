@@ -24,7 +24,7 @@ class FromSMILES_Parameters(molssi_workflow.Parameters):
         },
         "minimize": {
             "default": "no",
-            "kind": "boelan",
+            "kind": "boolean",
             "default_units": "",
             "enumeration": ("yes", "no"),
             "format_string": "s",
