@@ -86,7 +86,7 @@ class FromSMILES(molssi_workflow.Node):
         # Print what we are doing
         printer.important(
             __("Creating the structure from the SMILES '{smiles}'",
-               smiles=smiles, indent=self.indent + '    ')
+               smiles=smiles, indent='    ')
         )
 
         result = local.run(
@@ -188,7 +188,7 @@ class FromSMILES(molssi_workflow.Node):
         printer.important(
             __("    Created a molecular structure with {n_atoms} atoms.",
                n_atoms=len(structure['atoms']['elements']),
-               indent=self.indent + '    ')
+               indent='    ')
         )
 
         return next_node
