@@ -11,5 +11,5 @@ __version__ = '0.1.0'
 
 from from_smiles_step.from_smiles_step import FromSMILESStep  # nopep8
 from from_smiles_step.from_smiles import FromSMILES  # nopep8
-from from_smiles_step.from_smiles_parameters import FromSMILES_Parameters  # nopep8
+from from_smiles_step.from_smiles_parameters import FromSMILESParameters  # nopep8
 from from_smiles_step.tk_from_smiles import TkFromSMILES  # nopep8
