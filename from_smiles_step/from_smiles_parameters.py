@@ -9,7 +9,7 @@ import pprint
 logger = logging.getLogger(__name__)
 
 
-class FromSMILES_Parameters(molssi_workflow.Parameters):
+class FromSMILESParameters(molssi_workflow.Parameters):
     """The control parameters for creating a structure from SMILES"""
 
     parameters = {
@@ -44,15 +44,20 @@ class FromSMILES_Parameters(molssi_workflow.Parameters):
         },
     }
 
-    def __init__(self, data=parameters):
+    def __init__(self, data=None):
         """Initialize the instance, by default from the default
         parameters given in the class"""
 
-        logger.debug('FromSMILES_Parameters.__init__')
+        logger.debug('FromSMILESParameters.__init__')
+        logger.debug("Initializing FromSMILESParameters object:")
+        logger.debug("default:\n{}\n".format(
+            pprint.pformat(FromSMILESParameters.parameters))
+        )
+        if data:
+            logger.debug("\ndata:\n{}\n".format(pprint.pformat(data)))
 
-        super().__init__()
-
-        logger.debug("Initializing FromSMILES_Parameters object:")
-        logger.debug("\n{}\n".format(pprint.pformat(data)))
-
-        self.update(data)
+        super().__init__(FromSMILESParameters.parameters, data=data)
+        logger.debug("\nself._data Parameters:\n")
+        for key, parameter in self.items():
+            logger.debug(key)
+            parameter.debug_print()
