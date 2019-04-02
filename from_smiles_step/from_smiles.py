@@ -27,7 +27,7 @@ class FromSMILES(molssi_workflow.Node):
         super().__init__(workflow=workflow, title='from SMILES',
                          extension=extension)
 
-        self.parameters = from_smiles_step.FromSMILES_Parameters()
+        self.parameters = from_smiles_step.FromSMILESParameters()
 
     def describe(self, indent='', json_dict=None):
         """Write out information about what this node will do
