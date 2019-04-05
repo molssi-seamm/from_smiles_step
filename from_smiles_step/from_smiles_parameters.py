@@ -44,20 +44,11 @@ class FromSMILESParameters(molssi_workflow.Parameters):
         },
     }
 
-    def __init__(self, data=None):
+    def __init__(self, defaults={}, data=None):
         """Initialize the instance, by default from the default
         parameters given in the class"""
 
-        logger.debug('FromSMILESParameters.__init__')
-        logger.debug("Initializing FromSMILESParameters object:")
-        logger.debug("default:\n{}\n".format(
-            pprint.pformat(FromSMILESParameters.parameters))
+        super().__init__(
+            defaults={**FromSMILESParameters.parameters, **defaults},
+            data=data
         )
-        if data:
-            logger.debug("\ndata:\n{}\n".format(pprint.pformat(data)))
-
-        super().__init__(FromSMILESParameters.parameters, data=data)
-        logger.debug("\nself._data Parameters:\n")
-        for key, parameter in self.items():
-            logger.debug(key)
-            parameter.debug_print()
