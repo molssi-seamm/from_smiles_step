@@ -3,13 +3,13 @@
 """
 
 import logging
-import molssi_workflow
+import seamm
 import pprint
 
 logger = logging.getLogger(__name__)
 
 
-class FromSMILESParameters(molssi_workflow.Parameters):
+class FromSMILESParameters(seamm.Parameters):
     """The control parameters for creating a structure from SMILES"""
 
     parameters = {
