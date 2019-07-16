@@ -5,9 +5,9 @@ import from_smiles_step
 import logging
 import seamm
 import seamm.data
-import molssi_util
-import molssi_util.printing as printing
-from molssi_util.printing import FormattedText as __
+import seamm_util
+import seamm_util.printing as printing
+from seamm_util.printing import FormattedText as __
 import pprint
 
 logger = logging.getLogger(__name__)
@@ -157,7 +157,7 @@ class FromSMILES(seamm.Node):
                 seamm.data.structure = None
                 return None
 
-            structure = molssi_util.molfile.to_molssi(result['stdout'])
+            structure = seamm_util.molfile.to_molssi(result['stdout'])
         else:
             result = local.run(
                 cmd=['obabel', '--gen3d', '-ismi', '-omol', '-x3'],
@@ -173,7 +173,7 @@ class FromSMILES(seamm.Node):
             logger.debug('***Structure from obabel')
             logger.debug(result['stdout'])
 
-            structure = molssi_util.molfile.to_molssi(result['stdout'])
+            structure = seamm_util.molfile.to_molssi(result['stdout'])
 
         structure['periodicity'] = 0
         units = structure['units'] = {}

@@ -12,7 +12,7 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    'molssi_util',
+    'seamm_util',
     'seamm',
     'seamm_widgets',
     'logging',
