@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
 """The graphical part of a fromSMILES node"""
 
-import molssi_workflow
-import molssi_util.molssi_widgets as mw
+import seamm
+import seamm_widgets as sw
 import Pmw
 import tkinter as tk
 import tkinter.ttk as ttk
 
 
-class TkFromSMILES(molssi_workflow.TkNode):
+class TkFromSMILES(seamm.TkNode):
     """The graphical part of the From SMILES step
     """
 
-    def __init__(self, tk_workflow=None, node=None, canvas=None,
+    def __init__(self, tk_flowchart=None, node=None, canvas=None,
                  x=120, y=20, w=200, h=50):
         '''Initialize a node
 
         Keyword arguments:
         '''
-        super().__init__(tk_workflow=tk_workflow, node=node,
+        super().__init__(tk_flowchart=tk_flowchart, node=node,
                          canvas=canvas, x=x, y=y, w=w, h=h)
 
     def right_click(self, event):
@@ -58,7 +58,7 @@ class TkFromSMILES(molssi_workflow.TkNode):
                 self[key].grid(row=row, column=0, sticky=tk.EW)
                 row += 1
 
-            mw.align_labels(widgets)
+            sw.align_labels(widgets)
 
         self.dialog.activate(geometry='centerscreenfirst')
 

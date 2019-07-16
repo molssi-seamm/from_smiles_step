@@ -12,15 +12,16 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    'molssi_util',
-    'molssi_workflow',
+    'seamm_util',
+    'seamm',
+    'seamm_widgets',
     'logging',
     'pprint',
     'Pmw'
 ]
 
 setup_requirements = [
-    'pytest-runner',
+    # 'pytest-runner',
     # TODO(paulsaxe): put setup requirements (distutils extensions, etc.) here
 ]
 
@@ -60,10 +61,10 @@ setup(
     tests_require=test_requirements,
     setup_requires=setup_requirements,
     entry_points={
-        'org.molssi.workflow': [
+        'org.molssi.seamm': [
             'FromSMILESStep = from_smiles_step:FromSMILESStep',
         ],
-        'org.molssi.workflow.tk': [
+        'org.molssi.seamm.tk': [
             'FromSMILESStep = from_smiles_step:FromSMILESStep',
         ],
     },

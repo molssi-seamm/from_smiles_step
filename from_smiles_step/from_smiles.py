@@ -3,11 +3,11 @@
 
 import from_smiles_step
 import logging
-import molssi_workflow
-import molssi_workflow.data
-import molssi_util
-import molssi_util.printing as printing
-from molssi_util.printing import FormattedText as __
+import seamm
+import seamm.data
+import seamm_util
+import seamm_util.printing as printing
+from seamm_util.printing import FormattedText as __
 import pprint
 
 logger = logging.getLogger(__name__)
@@ -15,8 +15,8 @@ job = printing.getPrinter()
 printer = printing.getPrinter('from_smiles')
 
 
-class FromSMILES(molssi_workflow.Node):
-    def __init__(self, workflow=None, extension=None):
+class FromSMILES(seamm.Node):
+    def __init__(self, flowchart=None, extension=None):
         '''Initialize a specialized start node, which is the
         anchor for the graph.
 
@@ -24,7 +24,7 @@ class FromSMILES(molssi_workflow.Node):
         '''
         logger.debug('Creating FromSMILESNode {}'.format(self))
 
-        super().__init__(workflow=workflow, title='from SMILES',
+        super().__init__(flowchart=flowchart, title='from SMILES',
                          extension=extension)
 
         self.parameters = from_smiles_step.FromSMILESParameters()
@@ -74,13 +74,13 @@ class FromSMILES(molssi_workflow.Node):
         next_node = super().run(printer)
 
         P = self.parameters.current_values_to_dict(
-            context=molssi_workflow.workflow_variables._data
+            context=seamm.flowchart_variables._data
         )
 
         if P['smiles string'] is None or P['smiles string'] == '':
             return None
 
-        local = molssi_workflow.ExecLocal()
+        local = seamm.ExecLocal()
         smiles = P['smiles string']
 
         # Print what we are doing
@@ -97,7 +97,7 @@ class FromSMILES(molssi_workflow.Node):
         logger.log(0, pprint.pformat(result))
 
         if int(result['stderr'].split()[0]) == 0:
-            molssi_workflow.data.structure = None
+            seamm.data.structure = None
             return None
 
         logger.debug('***Intermediate molfile from obabel')
@@ -112,7 +112,7 @@ class FromSMILES(molssi_workflow.Node):
         logger.log(0, pprint.pformat(result))
 
         if int(result['stderr'].split()[0]) == 0:
-            molssi_workflow.data.structure = None
+            seamm.data.structure = None
             return None
 
         smiles = result['stdout']
@@ -131,7 +131,7 @@ class FromSMILES(molssi_workflow.Node):
             logger.debug(result['stdout'])
 
             if int(result['stderr'].split()[0]) == 0:
-                molssi_workflow.data.structure = None
+                seamm.data.structure = None
                 return None
 
             files = {}
@@ -154,10 +154,10 @@ class FromSMILES(molssi_workflow.Node):
                 input_data=mol2
             )
             if int(result['stderr'].split()[0]) == 0:
-                molssi_workflow.data.structure = None
+                seamm.data.structure = None
                 return None
 
-            structure = molssi_util.molfile.to_molssi(result['stdout'])
+            structure = seamm_util.molfile.to_molssi(result['stdout'])
         else:
             result = local.run(
                 cmd=['obabel', '--gen3d', '-ismi', '-omol', '-x3'],
@@ -167,19 +167,19 @@ class FromSMILES(molssi_workflow.Node):
             logger.log(0, pprint.pformat(result))
 
             if int(result['stderr'].split()[0]) == 0:
-                molssi_workflow.data.structure = None
+                seamm.data.structure = None
                 return None
 
             logger.debug('***Structure from obabel')
             logger.debug(result['stdout'])
 
-            structure = molssi_util.molfile.to_molssi(result['stdout'])
+            structure = seamm_util.molfile.to_molssi(result['stdout'])
 
         structure['periodicity'] = 0
         units = structure['units'] = {}
         units['coordinates'] = 'angstrom'
 
-        molssi_workflow.data.structure = structure
+        seamm.data.structure = structure
 
         logger.debug('\n***Structure dict')
         logger.debug(pprint.pformat(structure))

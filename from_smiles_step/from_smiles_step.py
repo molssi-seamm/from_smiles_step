@@ -15,10 +15,10 @@ class FromSMILESStep(object):
         'name': 'from SMILES'
     }
 
-    def __init__(self, workflow=None, gui=None):
+    def __init__(self, flowchart=None, gui=None):
         """Initialize this helper class, which is used by
         the application via stevedore to get information about
-        and create node objects for the workflow
+        and create node objects for the flowchart
         """
         pass
 
@@ -27,9 +27,9 @@ class FromSMILESStep(object):
         """
         return FromSMILESStep.my_description
 
-    def create_node(self, workflow=None, **kwargs):
+    def create_node(self, flowchart=None, **kwargs):
         """Return a new node object"""
-        return from_smiles_step.FromSMILES(workflow=workflow, **kwargs)
+        return from_smiles_step.FromSMILES(flowchart=flowchart, **kwargs)
 
     def create_tk_node(self, canvas=None, **kwargs):
         """Return the graphical Tk node object"""
