@@ -157,7 +157,7 @@ class FromSMILES(seamm.Node):
                 seamm.data.structure = None
                 return None
 
-            structure = seamm_util.molfile.to_molssi(result['stdout'])
+            structure = seamm_util.molfile.to_seamm(result['stdout'])
         else:
             result = local.run(
                 cmd=['obabel', '--gen3d', '-ismi', '-omol', '-x3'],
@@ -173,7 +173,7 @@ class FromSMILES(seamm.Node):
             logger.debug('***Structure from obabel')
             logger.debug(result['stdout'])
 
-            structure = seamm_util.molfile.to_molssi(result['stdout'])
+            structure = seamm_util.molfile.to_seamm(result['stdout'])
 
         structure['periodicity'] = 0
         units = structure['units'] = {}
