@@ -84,4 +84,3 @@ class TkFromSMILES(seamm.TkNode):
 
         for key in P:
             P[key].set_from_widget()
-
