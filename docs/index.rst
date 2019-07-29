@@ -1,5 +1,5 @@
-Welcome to From SMILES step's documentation!
-======================================
+Welcome to the documentation for From SMILES step
+=================================================
 
 Contents:
 

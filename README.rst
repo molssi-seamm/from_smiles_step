@@ -9,16 +9,19 @@ From SMILES step
 .. image:: https://img.shields.io/travis/molssi-seamm/from_smiles_step.svg
         :target: https://travis-ci.org/molssi-seamm/from_smiles_step
 
-.. image:: https://readthedocs.org/projects/from-smiles-step/badge/?version=latest
-        :target: https://from-smiles-step.readthedocs.io/en/latest/?badge=latest
+.. image:: https://readthedocs.org/projects/from_smiles-step/badge/?version=latest
+        :target: https://from_smiles-step.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
 .. image:: https://pyup.io/repos/github/molssi-seamm/from_smiles_step/shield.svg
      :target: https://pyup.io/repos/github/molssi-seamm/from_smiles_step/
      :alt: Updates
 
+.. image:: https://codecov.io/gh/molssi-seamm/from_smiles_step/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/molssi-seamm/from_smiles_step
 
-The From SMILES step implements a flowchart step to create a structure from a SMILES string
+
+The From SMILES step implements a step in a SEAMM flowchart to create a structure from a SMILES string
 
 
 * Free software: BSD license

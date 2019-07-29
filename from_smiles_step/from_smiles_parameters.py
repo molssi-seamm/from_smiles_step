@@ -4,7 +4,6 @@
 
 import logging
 import seamm
-import pprint
 
 logger = logging.getLogger(__name__)
 

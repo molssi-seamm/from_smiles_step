@@ -47,8 +47,13 @@ clean-test: ## remove test and coverage artifacts
 	rm -f .coverage
 	rm -fr htmlcov/
 
-lint: ## check style with flake8
+lint: ## check style with yapf
 	flake8 from_smiles_step tests
+#	yapf --diff --recursive from_smiles_step tests
+
+format: ## reformat with with yapf and isort
+	yapf --recursive --in-place from_smiles_step tests
+#	isort --recursive --atomic from_smiles_step tests
 
 test: ## run tests quickly with the default Python
 	py.test
@@ -78,8 +83,8 @@ servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
 release: clean ## package and upload a release
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	python setup.py sdist bdist_wheel
+	python -m twine upload dist/*
 
 dist: clean ## builds source and wheel package
 	python setup.py sdist

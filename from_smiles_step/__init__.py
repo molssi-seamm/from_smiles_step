@@ -9,7 +9,7 @@ __version__ = '0.1.0'
 # Bring up the classes so that they appear to be directly in
 # the package.
 
-from from_smiles_step.from_smiles_step import FromSMILESStep  # nopep8
-from from_smiles_step.from_smiles import FromSMILES  # nopep8
-from from_smiles_step.from_smiles_parameters import FromSMILESParameters  # nopep8
-from from_smiles_step.tk_from_smiles import TkFromSMILES  # nopep8
+from from_smiles_step.from_smiles_step import FromSMILESStep  # noqa: F401
+from from_smiles_step.from_smiles import FromSMILES  # noqa: F401
+from from_smiles_step.from_smiles_parameters import FromSMILESParameters  # noqa: F401 E501
+from from_smiles_step.tk_from_smiles import TkFromSMILES  # noqa: F401

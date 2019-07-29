@@ -136,7 +136,7 @@ class FromSMILES(seamm.Node):
 
             files = {}
             files['input.mol2'] = result['stdout']
-            
+
             # minimize
             result = local.run(
                 cmd=['obminimize', '-o', 'mol2',
