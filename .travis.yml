@@ -9,7 +9,7 @@ deploy:
   distributions: sdist bdist_wheel
   on:
     python: 3.6
-    repo: molssi-seamm/seamm_util
+    repo: molssi-seamm/from_smiles_step
     tags: true
   user: seamm
   password:
