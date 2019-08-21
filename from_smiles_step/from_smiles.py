@@ -29,29 +29,49 @@ class FromSMILES(seamm.Node):
 
         self.parameters = from_smiles_step.FromSMILESParameters()
 
-    def describe(self, indent='', json_dict=None):
-        """Write out information about what this node will do
-        If json_dict is passed in, add information to that dictionary
-        so that it can be written out by the controller as appropriate.
+    @property
+    def version(self):
+        """The semantic version of this module.
+        """
+        return from_smiles_step.__version__
+
+    @property
+    def git_revision(self):
+        """The git version of this module.
+        """
+        return from_smiles_step.__git_revision__
+    
+    def description_text(self, P=None):
+        """Return a short description of this step.
+
+        Return a nicely formatted string describing what this step will
+        do. 
+
+        Keyword arguments:
+            P: a dictionary of parameter values, which may be variables
+                or final values. If None, then the parameters values will
+                be used as is.
         """
 
-        next_node = super().describe(indent, json_dict)
-
-        P = self.parameters.values_to_dict()
+        if not P:
+            P = self.parameters.values_to_dict()
 
         if P['smiles string'][0] == '$':
-            job.job(
-                __("Create the structure from the SMILES in the variable"
-                   " '{smiles string}'",
-                   **P, indent=self.indent + '    ')
+            text = (
+                "Create the structure from the SMILES in the variable"
+                " '{smiles string}'."
             )
         else:
-            job.job(
-                __("Create the structure from the SMILES '{smiles string}'",
-                   **P, indent=self.indent + '    ')
-            )
+            text = "Create the structure from the SMILES '{smiles string}'"
 
-        return next_node
+        if isinstance(P['minimize'], bool) and P['minimize']:
+            text += "The structure will be minimized"
+            text += " with the '{forcefield}' forcefield."
+        elif isinstance(P['minimize'], str) and P['minimize'][0] == '$':
+            text += "The structure will be minimized if '{minimize}' is true"
+            text += " with the '{forcefield}' forcefield."
+
+        return __(text, **P, indent=self.indent + '    ').__str__()
 
     def run(self):
         """Create 3-D structure from a SMILES string
@@ -77,17 +97,14 @@ class FromSMILES(seamm.Node):
             context=seamm.flowchart_variables._data
         )
 
+        # Print what we are doing
+        printer.important(self.description_text(P))
+
         if P['smiles string'] is None or P['smiles string'] == '':
             return None
 
         local = seamm.ExecLocal()
         smiles = P['smiles string']
-
-        # Print what we are doing
-        printer.important(
-            __("Creating the structure from the SMILES '{smiles}'",
-               smiles=smiles, indent='    ')
-        )
 
         result = local.run(
             cmd=['obabel', '--gen3d', '-ismi', '-omol'],
@@ -186,7 +203,7 @@ class FromSMILES(seamm.Node):
 
         # Finish the output
         printer.important(
-            __("    Created a molecular structure with {n_atoms} atoms.",
+            __("    Created a molecular structure with {n_atoms} atoms.\n",
                n_atoms=len(structure['atoms']['elements']),
                indent='    ')
         )
