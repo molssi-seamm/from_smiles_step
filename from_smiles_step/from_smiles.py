@@ -45,7 +45,7 @@ class FromSMILES(seamm.Node):
         """Return a short description of this step.
 
         Return a nicely formatted string describing what this step will
-        do. 
+        do.
 
         Keyword arguments:
             P: a dictionary of parameter values, which may be variables
@@ -71,7 +71,9 @@ class FromSMILES(seamm.Node):
             text += "The structure will be minimized if '{minimize}' is true"
             text += " with the '{forcefield}' forcefield."
 
-        return __(text, **P, indent=self.indent + '    ').__str__()
+        return self.header + '\n' + __(
+            text, **P, indent=self.indent + '    '
+        ).__str__()
 
     def run(self):
         """Create 3-D structure from a SMILES string
@@ -207,5 +209,6 @@ class FromSMILES(seamm.Node):
                n_atoms=len(structure['atoms']['elements']),
                indent='    ')
         )
+        printer.important('')
 
         return next_node
