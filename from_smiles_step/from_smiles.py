@@ -40,7 +40,7 @@ class FromSMILES(seamm.Node):
         """The git version of this module.
         """
         return from_smiles_step.__git_revision__
-    
+
     def description_text(self, P=None):
         """Return a short description of this step.
 
