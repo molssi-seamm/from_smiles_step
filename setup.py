@@ -23,10 +23,9 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    'seamm_util',
-    'seamm',
-    'seamm_widgets',
-    'pprint',
+    'seamm_util>=0.5',
+    'seamm>=0.5',
+    'seamm_widgets>=0.5',
     'Pmw'
 ]
 
