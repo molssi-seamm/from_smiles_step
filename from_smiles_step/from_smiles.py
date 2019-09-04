@@ -72,7 +72,7 @@ class FromSMILES(seamm.Node):
             text += " with the '{forcefield}' forcefield."
 
         return self.header + '\n' + __(
-            text, **P, indent=self.indent + '    '
+            text, **P, indent=4 * ' '
         ).__str__()
 
     def run(self):
