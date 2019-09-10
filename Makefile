@@ -49,14 +49,13 @@ clean-test: ## remove test and coverage artifacts
 
 lint: ## check style with yapf
 	flake8 from_smiles_step tests
-#	yapf --diff --recursive from_smiles_step tests
+	yapf --diff --recursive from_smiles_step tests
 
 format: ## reformat with with yapf and isort
 	yapf --recursive --in-place from_smiles_step tests
-#	isort --recursive --atomic from_smiles_step tests
 
 test: ## run tests quickly with the default Python
-	py.test
+	pytest
 
 dependencies:
 	pur -r requirements_dev.txt

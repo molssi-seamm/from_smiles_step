@@ -22,20 +22,8 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = [
-    'seamm_util>=0.5',
-    'seamm>=0.5',
-    'seamm_widgets>=0.5',
-    'Pmw'
-]
-
-setup_requirements = [
-    'pytest-runner',
-]
-
-test_requirements = [
-    'pytest',
-]
+with open('requirements_install.txt') as fd:
+    requirements = fd.read()
 
 setup(
     name='from_smiles_step',
@@ -47,7 +35,6 @@ setup(
     cmdclass=versioneer.get_cmdclass(),
     license='BSD-3-Clause',
     url='https://github.com/molssi-seamm/from_smiles_step',
-
     
     # Which Python importable modules should be included when your package is
     # installed handled automatically by setuptools. Use 'exclude' to prevent
@@ -78,16 +65,15 @@ setup(
 
     # Manual control if final package is compressible or not, set False to
     # prevent the .egg from being made
-    zip_safe=False,
+    # zip_safe=False,
 
     keywords='from_smiles_step',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
