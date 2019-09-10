@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """a node to create a structure from a SMILES string"""
 
 import argparse
@@ -27,6 +28,7 @@ def upcase(string):
 
 
 class FromSMILES(seamm.Node):
+
     def __init__(self, flowchart=None, extension=None):
         '''Initialize a specialized start node, which is the
         anchor for the graph.
@@ -79,8 +81,9 @@ class FromSMILES(seamm.Node):
         if 'from_smiles_log_level' in self.options:
             logger.setLevel(self.options.from_smiles_log_level)
 
-        super().__init__(flowchart=flowchart, title='from SMILES',
-                         extension=extension)
+        super().__init__(
+            flowchart=flowchart, title='from SMILES', extension=extension
+        )
 
         self.parameters = from_smiles_step.FromSMILESParameters()
 
@@ -126,9 +129,7 @@ class FromSMILES(seamm.Node):
             text += "The structure will be minimized if '{minimize}' is true"
             text += " with the '{forcefield}' forcefield."
 
-        return self.header + '\n' + __(
-            text, **P, indent=4 * ' '
-        ).__str__()
+        return self.header + '\n' + __(text, **P, indent=4 * ' ').__str__()
 
     def run(self):
         """Create 3-D structure from a SMILES string
@@ -170,8 +171,7 @@ class FromSMILES(seamm.Node):
         smiles = P['smiles string']
 
         result = local.run(
-            cmd=[obabel_exe, '--gen3d', '-ismi', '-omol'],
-            input_data=smiles
+            cmd=[obabel_exe, '--gen3d', '-ismi', '-omol'], input_data=smiles
         )
 
         logger.log(0, pprint.pformat(result))
@@ -185,8 +185,7 @@ class FromSMILES(seamm.Node):
 
         mol = result['stdout']
         result = local.run(
-            cmd=[obabel_exe, '-imol', '-osmi', '-xh'],
-            input_data=mol
+            cmd=[obabel_exe, '-imol', '-osmi', '-xh'], input_data=mol
         )
 
         logger.log(0, pprint.pformat(result))
@@ -219,8 +218,10 @@ class FromSMILES(seamm.Node):
 
             # minimize
             result = local.run(
-                cmd=[obminimize_exe, '-o', 'mol2',
-                     '-ff', P['forcefield'], 'input.mol2'],
+                cmd=[
+                    obminimize_exe, '-o', 'mol2', '-ff', P['forcefield'],
+                    'input.mol2'
+                ],
                 files=files
             )
 
@@ -230,8 +231,7 @@ class FromSMILES(seamm.Node):
             mol2 = result['stdout']
 
             result = local.run(
-                cmd=[obabel_exe, '-imol2', '-omol', '-x3'],
-                input_data=mol2
+                cmd=[obabel_exe, '-imol2', '-omol', '-x3'], input_data=mol2
             )
             if int(result['stderr'].split()[0]) == 0:
                 seamm.data.structure = None
@@ -266,9 +266,11 @@ class FromSMILES(seamm.Node):
 
         # Finish the output
         printer.important(
-            __("    Created a molecular structure with {n_atoms} atoms.\n",
-               n_atoms=len(structure['atoms']['elements']),
-               indent='    ')
+            __(
+                "    Created a molecular structure with {n_atoms} atoms.\n",
+                n_atoms=len(structure['atoms']['elements']),
+                indent='    '
+            )
         )
         printer.important('')
 
