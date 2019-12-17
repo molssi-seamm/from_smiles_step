@@ -148,6 +148,7 @@ class FromSMILES(seamm.Node):
             echo 'CCO' | obabel --gen3d -ismi -omol | obabel -imol -osmi -xh\
                   | obabel --gen3d -ismi -opcjson
         """
+        logger.debug('Entering from_smiles:run')
 
         next_node = super().run(printer)
 
