@@ -30,9 +30,9 @@ class FromSMILESStep(object):
         """
         return FromSMILESStep.my_description
 
-    def create_node(self, flowchart=None, **kwargs):
+    def create_node(self, **kwargs):
         """Return a new node object"""
-        return from_smiles_step.FromSMILES(flowchart=flowchart, **kwargs)
+        return from_smiles_step.FromSMILES(**kwargs)
 
     def create_tk_node(self, canvas=None, **kwargs):
         """Return the graphical Tk node object"""
