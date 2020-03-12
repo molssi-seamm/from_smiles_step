@@ -79,10 +79,10 @@ setup(
     ],
     entry_points={
         'org.molssi.seamm': [
-            'FromSMILESStep = from_smiles_step:FromSMILESStep',
+            'FromSMILES = from_smiles_step:FromSMILESStep',
         ],
         'org.molssi.seamm.tk': [
-            'FromSMILESStep = from_smiles_step:FromSMILESStep',
+            'FromSMILES = from_smiles_step:FromSMILESStep',
         ],
     },
 )

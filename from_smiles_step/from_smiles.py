@@ -29,7 +29,7 @@ def upcase(string):
 
 class FromSMILES(seamm.Node):
 
-    def __init__(self, flowchart=None, extension=None):
+    def __init__(self):
         '''Initialize a specialized start node, which is the
         anchor for the graph.
 
@@ -81,9 +81,7 @@ class FromSMILES(seamm.Node):
         if 'from_smiles_log_level' in self.options:
             logger.setLevel(self.options.from_smiles_log_level)
 
-        super().__init__(
-            flowchart=flowchart, title='from SMILES', extension=extension
-        )
+        super().__init__(title='from SMILES')
 
         self.parameters = from_smiles_step.FromSMILESParameters()
 
@@ -150,7 +148,7 @@ class FromSMILES(seamm.Node):
         """
         logger.debug('Entering from_smiles:run')
 
-        next_node = super().run(printer)
+        super().run(printer)
 
         # The options from command line, config file ...
         o = self.options
@@ -275,4 +273,4 @@ class FromSMILES(seamm.Node):
         )
         printer.important('')
 
-        return next_node
+        return self.next()
