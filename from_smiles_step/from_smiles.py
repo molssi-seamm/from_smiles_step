@@ -118,7 +118,7 @@ class FromSMILES(seamm.Node):
                 " '{smiles string}'."
             )
         else:
-            text = "Create the structure from the SMILES '{smiles string}'"
+            text = "Create the structure from the SMILES '{smiles string}'."
 
         if isinstance(P['minimize'], bool) and P['minimize']:
             text += "The structure will be minimized"
@@ -127,7 +127,10 @@ class FromSMILES(seamm.Node):
             text += "The structure will be minimized if '{minimize}' is true"
             text += " with the '{forcefield}' forcefield."
 
-        return self.header + '\n' + __(text, **P, indent=4 * ' ').__str__()
+        return (
+            self.header + '\n' +
+            str(__(text, **P, indent=self.indent + 3 * ' '))
+        )
 
     def run(self):
         """Create 3-D structure from a SMILES string
@@ -150,6 +153,8 @@ class FromSMILES(seamm.Node):
 
         super().run(printer)
 
+        printer.important(self.header)
+
         # The options from command line, config file ...
         o = self.options
 
@@ -159,9 +164,6 @@ class FromSMILES(seamm.Node):
         P = self.parameters.current_values_to_dict(
             context=seamm.flowchart_variables._data
         )
-
-        # Print what we are doing
-        printer.important(self.description_text(P))
 
         if P['smiles string'] is None or P['smiles string'] == '':
             return None
@@ -266,11 +268,12 @@ class FromSMILES(seamm.Node):
         # Finish the output
         printer.important(
             __(
-                "    Created a molecular structure with {n_atoms} atoms.\n",
+                "Created a molecular structure with {n_atoms} atoms "
+                "from the SMILES string {smiles_string}.",
                 n_atoms=len(structure['atoms']['elements']),
-                indent='    '
+                smiles_string=P['smiles string'],
+                indent=self.indent + 3 * ' '
             )
         )
-        printer.important('')
 
         return self.next()
