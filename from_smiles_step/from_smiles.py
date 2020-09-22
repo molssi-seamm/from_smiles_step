@@ -168,7 +168,7 @@ class FromSMILES(seamm.Node):
 
         # Get the system
         system = self.get_variable('_system')
-        # system.clear()
+        system.clear()
 
         local = seamm.ExecLocal()
         smiles = P['smiles string']
