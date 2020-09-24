@@ -9,8 +9,6 @@ import logging
 import os.path
 import pprint
 import seamm
-import seamm.data
-import seamm_util
 import seamm_util.printing as printing
 from seamm_util.printing import FormattedText as __
 
@@ -168,6 +166,10 @@ class FromSMILES(seamm.Node):
         if P['smiles string'] is None or P['smiles string'] == '':
             return None
 
+        # Get the system
+        system = self.get_variable('_system')
+        system.clear()
+
         local = seamm.ExecLocal()
         smiles = P['smiles string']
 
@@ -178,7 +180,6 @@ class FromSMILES(seamm.Node):
         logger.log(0, pprint.pformat(result))
 
         if int(result['stderr'].split()[0]) == 0:
-            seamm.data.structure = None
             return None
 
         logger.debug('***Intermediate molfile from obabel')
@@ -192,7 +193,6 @@ class FromSMILES(seamm.Node):
         logger.log(0, pprint.pformat(result))
 
         if int(result['stderr'].split()[0]) == 0:
-            seamm.data.structure = None
             return None
 
         smiles = result['stdout']
@@ -211,7 +211,6 @@ class FromSMILES(seamm.Node):
             logger.debug(result['stdout'])
 
             if int(result['stderr'].split()[0]) == 0:
-                seamm.data.structure = None
                 return None
 
             files = {}
@@ -235,10 +234,10 @@ class FromSMILES(seamm.Node):
                 cmd=[obabel_exe, '-imol2', '-omol', '-x3'], input_data=mol2
             )
             if int(result['stderr'].split()[0]) == 0:
-                seamm.data.structure = None
                 return None
 
-            structure = seamm_util.molfile.to_seamm(result['stdout'])
+            system.from_molfile_text(result['stdout'])
+            system.name = smiles
         else:
             result = local.run(
                 cmd=[obabel_exe, '--gen3d', '-ismi', '-omol', '-x3'],
@@ -248,28 +247,22 @@ class FromSMILES(seamm.Node):
             logger.log(0, pprint.pformat(result))
 
             if int(result['stderr'].split()[0]) == 0:
-                seamm.data.structure = None
                 return None
 
             logger.debug('***Structure from obabel')
             logger.debug(result['stdout'])
 
-            structure = seamm_util.molfile.to_seamm(result['stdout'])
+            system.from_molfile_text(result['stdout'])
+            system.name = smiles
 
-        structure['periodicity'] = 0
-        units = structure['units'] = {}
-        units['coordinates'] = 'angstrom'
-
-        seamm.data.structure = structure
-
-        logger.debug('\n***Structure dict')
-        logger.debug(pprint.pformat(structure))
+        logger.debug('\n***System')
+        logger.debug(str(system))
 
         # Finish the output
         printer.important(
             __(
                 "    Created a molecular structure with {n_atoms} atoms.\n",
-                n_atoms=len(structure['atoms']['elements']),
+                n_atoms=system.n_atoms(),
                 indent='    '
             )
         )
