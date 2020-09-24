@@ -195,9 +195,8 @@ class FromSMILES(seamm.Node):
         if int(result['stderr'].split()[0]) == 0:
             return None
 
-        smiles = result['stdout']
-        logger.debug('***smiles with Hs from obabel')
-        logger.debug(smiles)
+        smiles = result['stdout'].strip()
+        logger.info(f"SMILES with Hs from obabel: '{smiles}'")
 
         if P['minimize']:
             # from SMILES to mol2
