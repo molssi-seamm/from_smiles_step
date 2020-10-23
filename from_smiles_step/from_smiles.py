@@ -2,8 +2,6 @@
 
 """a node to create a structure from a SMILES string"""
 
-import argparse
-import configargparse
 import from_smiles_step
 import logging
 import os.path
@@ -35,52 +33,11 @@ class FromSMILES(seamm.Node):
         '''
         logger.debug('Creating FromSMILESNode {}'.format(self))
 
-        # Argument/config parsing
-        self.parser = configargparse.ArgParser(
-            auto_env_var_prefix='',
-            default_config_files=[
-                '/etc/seamm/openbabel.ini',
-                '/etc/seamm/from_smiles_step.ini',
-                '/etc/seamm/seamm.ini',
-                '~/.seamm/openbabel.ini',
-                '~/.seamm/from_smiles_step.ini',
-                '~/.seamm/seamm.ini',
-            ]
-        )
-
-        self.parser.add_argument(
-            '--seamm-configfile',
-            is_config_file=True,
-            default=None,
-            help='a configuration file to override others'
-        )
-
-        # Options for this plugin
-        self.parser.add_argument(
-            "--from-smiles-log-level",
-            default=argparse.SUPPRESS,
-            choices=[
-                'CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET'
-            ],
-            type=upcase,
-            help="the logging level for the From SMILES step"
-        )
-
-        # Options for OpenBabel
-        self.parser.add_argument(
-            '--openbabel-path',
-            default='',
-            help='the path to the OpenBabel executables'
-        )
-
-        self.options, self.unknown = self.parser.parse_known_args()
-
-        # Set the logging level for this module if requested
-        if 'from_smiles_log_level' in self.options:
-            logger.setLevel(self.options.from_smiles_log_level)
-
         super().__init__(
-            flowchart=flowchart, title='from SMILES', extension=extension
+            flowchart=flowchart,
+            title='from SMILES',
+            extension=extension,
+            logger=logger
         )
 
         self.parameters = from_smiles_step.FromSMILESParameters()
@@ -96,6 +53,32 @@ class FromSMILES(seamm.Node):
         """The git version of this module.
         """
         return from_smiles_step.__git_revision__
+
+    def create_parser(self):
+        """Setup the command-line / config file parser
+        """
+        parser_name = 'from-smiles-step'
+        parser = seamm.getParser()
+
+        # Remember if the parser exists ... this type of step may have been
+        # found before
+        parser_exists = parser.exists(parser_name)
+
+        # Create the standard options, e.g. log-level
+        result = super().create_parser(name=parser_name)
+
+        if parser_exists:
+            return result
+
+        # Options for OpenBabel
+        parser.add_argument(
+            parser_name,
+            '--openbabel-path',
+            default='',
+            help='the path to the OpenBabel executables'
+        )
+
+        return result
 
     def description_text(self, P=None):
         """Return a short description of this step.
@@ -146,15 +129,15 @@ class FromSMILES(seamm.Node):
             echo 'CCO' | obabel --gen3d -ismi -omol | obabel -imol -osmi -xh\
                   | obabel --gen3d -ismi -opcjson
         """
-        logger.debug('Entering from_smiles:run')
+        self.logger.debug('Entering from_smiles:run')
 
         next_node = super().run(printer)
 
-        # The options from command line, config file ...
-        o = self.options
+        parser = seamm.getParser()
+        options = parser.get_options('from-smiles-step')
 
-        obabel_exe = os.path.join(o.openbabel_path, 'obabel')
-        obminimize_exe = os.path.join(o.openbabel_path, 'obminimize')
+        obabel_exe = os.path.join(options['openbabel_path'], 'obabel')
+        obminimize_exe = os.path.join(options['openbabel_path'], 'obminimize')
 
         P = self.parameters.current_values_to_dict(
             context=seamm.flowchart_variables._data
@@ -177,26 +160,26 @@ class FromSMILES(seamm.Node):
             cmd=[obabel_exe, '--gen3d', '-ismi', '-omol'], input_data=smiles
         )
 
-        logger.log(0, pprint.pformat(result))
+        self.logger.log(0, pprint.pformat(result))
 
         if int(result['stderr'].split()[0]) == 0:
             return None
 
-        logger.debug('***Intermediate molfile from obabel')
-        logger.debug(result['stdout'])
+        self.logger.debug('***Intermediate molfile from obabel')
+        self.logger.debug(result['stdout'])
 
         mol = result['stdout']
         result = local.run(
             cmd=[obabel_exe, '-imol', '-osmi', '-xh'], input_data=mol
         )
 
-        logger.log(0, pprint.pformat(result))
+        self.logger.log(0, pprint.pformat(result))
 
         if int(result['stderr'].split()[0]) == 0:
             return None
 
         smiles = result['stdout'].strip()
-        logger.info(f"SMILES with Hs from obabel: '{smiles}'")
+        self.logger.info(f"SMILES with Hs from obabel: '{smiles}'")
 
         if P['minimize']:
             # from SMILES to mol2
@@ -205,9 +188,9 @@ class FromSMILES(seamm.Node):
                 input_data=smiles
             )
 
-            # logger.log(0, pprint.pformat(result))
-            logger.debug('***Intermediate mol2 file from obabel')
-            logger.debug(result['stdout'])
+            # self.logger.log(0, pprint.pformat(result))
+            self.logger.debug('***Intermediate mol2 file from obabel')
+            self.logger.debug(result['stdout'])
 
             if int(result['stderr'].split()[0]) == 0:
                 return None
@@ -224,9 +207,9 @@ class FromSMILES(seamm.Node):
                 files=files
             )
 
-            # logger.log(0, pprint.pformat(result))
-            logger.debug('***Intermediate mol2 from obminimize')
-            logger.debug(result['stdout'])
+            # self.logger.log(0, pprint.pformat(result))
+            self.logger.debug('***Intermediate mol2 from obminimize')
+            self.logger.debug(result['stdout'])
             mol2 = result['stdout']
 
             result = local.run(
@@ -243,19 +226,19 @@ class FromSMILES(seamm.Node):
                 input_data=smiles
             )
 
-            logger.log(0, pprint.pformat(result))
+            self.logger.log(0, pprint.pformat(result))
 
             if int(result['stderr'].split()[0]) == 0:
                 return None
 
-            logger.debug('***Structure from obabel')
-            logger.debug(result['stdout'])
+            self.logger.debug('***Structure from obabel')
+            self.logger.debug(result['stdout'])
 
             system.from_molfile_text(result['stdout'])
             system.name = smiles
 
-        logger.debug('\n***System')
-        logger.debug(str(system))
+        self.logger.debug('\n***System')
+        self.logger.debug(str(system))
 
         # Finish the output
         printer.important(
