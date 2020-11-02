@@ -15,14 +15,6 @@ job = printing.getPrinter()
 printer = printing.getPrinter('from_smiles')
 
 
-def upcase(string):
-    """Return an uppercase version of the string.
-
-    Used for the type argument in argparse/
-    """
-    return string.upper()
-
-
 class FromSMILES(seamm.Node):
 
     def __init__(self, flowchart=None, extension=None):
