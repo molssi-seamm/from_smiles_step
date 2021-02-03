@@ -2,23 +2,33 @@
 From SMILES step
 ================
 
+.. image:: https://img.shields.io/github/issues-pr-raw/molssi-seamm/from_smiles_step
+   :target: https://github.com/molssi-seamm/from_smiles_step/pulls
+   :alt: GitHub pull requests
 
-.. image:: https://img.shields.io/pypi/v/from_smiles_step.svg
-        :target: https://pypi.python.org/pypi/from_smiles_step
-
-.. image:: https://img.shields.io/travis/molssi-seamm/from_smiles_step.svg
-        :target: https://travis-ci.org/molssi-seamm/from_smiles_step
-
-.. image:: https://readthedocs.org/projects/from_smiles-step/badge/?version=latest
-        :target: https://from_smiles-step.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
-
-.. image:: https://pyup.io/repos/github/molssi-seamm/from_smiles_step/shield.svg
-     :target: https://pyup.io/repos/github/molssi-seamm/from_smiles_step/
-     :alt: Updates
+.. image:: https://github.com/molssi-seamm/from_smiles_step/workflows/CI/badge.svg
+   :target: https://github.com/molssi-seamm/from_smiles_step/actions
+   :alt: Build Status
 
 .. image:: https://codecov.io/gh/molssi-seamm/from_smiles_step/branch/master/graph/badge.svg
-  :target: https://codecov.io/gh/molssi-seamm/from_smiles_step
+   :target: https://codecov.io/gh/molssi-seamm/from_smiles_step
+   :alt: Code Coverage
+
+.. image:: https://img.shields.io/lgtm/grade/python/g/molssi-seamm/from_smiles_step.svg?logo=lgtm&logoWidth=18
+   :target: https://lgtm.com/projects/g/molssi-seamm/from_smiles_step/context:python
+   :alt: Code Quality
+
+.. image:: https://github.com/molssi-seamm/from_smiles_step/workflows/Documentation/badge.svg
+   :target: https://molssi-seamm.github.io/from_smiles_step/index.html
+   :alt: Documentation Status
+
+.. image:: https://pyup.io/repos/github/molssi-seamm/from_smiles_step/shield.svg
+   :target: https://pyup.io/repos/github/molssi-seamm/from_smiles_step/
+   :alt: Updates for Dependencies
+
+.. image:: https://img.shields.io/pypi/v/from_smiles_step.svg
+   :target: https://pypi.python.org/pypi/from_smiles_step
+   :alt: PyPi VERSION
 
 
 The From SMILES step implements a step in a SEAMM flowchart to create a structure from a SMILES string

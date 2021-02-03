@@ -142,8 +142,9 @@ class FromSMILES(seamm.Node):
             return None
 
         # Get the system
-        system = self.get_variable('_system')
-        system.clear()
+        system_db = self.get_variable('_system_db')
+        configuration = system_db.system.configuration
+        configuration.clear()
 
         local = seamm.ExecLocal()
         smiles = P['smiles string']
@@ -210,8 +211,8 @@ class FromSMILES(seamm.Node):
             if int(result['stderr'].split()[0]) == 0:
                 return None
 
-            system.from_molfile_text(result['stdout'])
-            system.name = smiles
+            configuration.from_molfile_text(result['stdout'])
+            configuration.name = smiles
         else:
             result = local.run(
                 cmd=[obabel_exe, '--gen3d', '-ismi', '-omol', '-x3'],
@@ -226,17 +227,17 @@ class FromSMILES(seamm.Node):
             self.logger.debug('***Structure from obabel')
             self.logger.debug(result['stdout'])
 
-            system.from_molfile_text(result['stdout'])
-            system.name = smiles
+            configuration.from_molfile_text(result['stdout'])
+            configuration.name = smiles
 
-        self.logger.debug('\n***System')
-        self.logger.debug(str(system))
+        self.logger.debug('\n***Configuration')
+        self.logger.debug(str(configuration))
 
         # Finish the output
         printer.important(
             __(
                 "    Created a molecular structure with {n_atoms} atoms.\n",
-                n_atoms=system.n_atoms(),
+                n_atoms=configuration.n_atoms,
                 indent='    '
             )
         )
