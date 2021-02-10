@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-from_smiles_step
-A step in SEAMM Flowchart to create a structure from a SMILES string
+"""from_smiles_step
+A SEAMM plug-in for creating structures from a SMILES string.
 """
 
 import sys
 from setuptools import setup, find_packages
 import versioneer
 
-short_description = __doc__.split("\n")
+short_description = __doc__.splitlines()[1]
 
 # from https://github.com/pytest-dev/pytest-runner#conditional-requirement
 needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
@@ -29,8 +28,9 @@ setup(
     name='from_smiles_step',
     author="Paul Saxe",
     author_email='psaxe@molssi.org',
-    description=short_description[1:],
+    description=short_description,
     long_description=readme + '\n\n' + history,
+    long_description_content_type='text/x-rst',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     license='BSD-3-Clause',
@@ -67,9 +67,9 @@ setup(
     # prevent the .egg from being made
     # zip_safe=False,
 
-    keywords='from_smiles_step',
+    keywords=['SEAMM', 'plug-in', 'flowchart', 'SMILES', 'molecule'],
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
