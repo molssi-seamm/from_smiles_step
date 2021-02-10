@@ -1,7 +1,3 @@
-================
-From SMILES step
-================
-
 .. image:: https://img.shields.io/github/issues-pr-raw/molssi-seamm/from_smiles_step
    :target: https://github.com/molssi-seamm/from_smiles_step/pulls
    :alt: GitHub pull requests
@@ -30,21 +26,33 @@ From SMILES step
    :target: https://pypi.python.org/pypi/from_smiles_step
    :alt: PyPi VERSION
 
+=========================
+SEAMM From SMILES plug-in
+=========================
 
-The From SMILES step implements a step in a SEAMM flowchart to create a structure from a SMILES string
+A SEAMM plug-in for creating structures from a SMILES string.
 
+This plug-in accepts SMILES_ (Simplified Molecular-Input Line Entry
+System) string representing a structure, and creates the structure if
+the current system/conformation in SEAMM. It uses the implementation
+in `Open Babel`_ which has an extension for handling radicals_.
 
 * Free software: BSD license
 * Documentation: https://from-smiles-step.readthedocs.io.
 
+.. _SMILES: https://en.wikipedia.org/wiki/Simplified_molecular-input_line-entry_system
+.. _`Open Babel`: http://openbabel.org/wiki/Main_Page
+.. _radicals: http://openbabel.org/wiki/Radicals_and_SMILES_extensions
 
 Features
 --------
 
-* TODO
+* Accepts with a SMILES string directly or from a variable.
+* The generated structure can optionally be optimized using one of
+  several forcefields.
 
-Credits
----------
+Acknowledgements
+----------------
 
 This package was created with Cookiecutter_ and the `molssi-seamm/cookiecutter-seamm-plugin`_ project template.
 
