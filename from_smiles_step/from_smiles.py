@@ -7,6 +7,7 @@ import logging
 import os.path
 import pprint
 import seamm
+import seamm_util
 import seamm_util.printing as printing
 from seamm_util.printing import FormattedText as __
 
@@ -50,7 +51,7 @@ class FromSMILES(seamm.Node):
         """Setup the command-line / config file parser
         """
         parser_name = 'from-smiles-step'
-        parser = seamm.getParser()
+        parser = seamm_util.getParser()
 
         # Remember if the parser exists ... this type of step may have been
         # found before
@@ -125,7 +126,7 @@ class FromSMILES(seamm.Node):
 
         next_node = super().run(printer)
 
-        parser = seamm.getParser()
+        parser = seamm_util.getParser()
         options = parser.get_options('from-smiles-step')
 
         obabel_exe = os.path.join(options['openbabel_path'], 'obabel')
