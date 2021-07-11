@@ -19,27 +19,46 @@ class FromSMILESParameters(seamm.Parameters):
             "enumeration": tuple(),
             "format_string": "s",
             "description": "SMILES:",
-            "help_text": ("The SMILES string for the structure.")
+            "help_text": ("The SMILES string for the structure."),
         },
-        "minimize": {
-            "default": "no",
-            "kind": "boolean",
-            "default_units": "",
-            "enumeration": ("yes", "no"),
-            "format_string": "s",
-            "description": "Minimize the structure:",
-            "help_text": ("Whether to minimize the structure using one "
-                          "of the forcefields supported by OpenBabel.")
-        },
-        "forcefield": {
-            "default": "UFF",
+        "handling": {
+            "default": "Overwrite the current configuration",
             "kind": "enumeration",
             "default_units": "",
-            "enumeration": ("UFF", "GAFF", "MMFF94", "MMFF94s", "Ghemical"),
+            "enumeration": (
+                "Overwrite the current configuration",
+                "Create a new configuration",
+                "Create a new system and configuration",
+            ),
             "format_string": "s",
-            "description": "Forcefield:",
-            "help_text": ("The forcefield to use when minimizing the "
-                          "structure.")
+            "description": "",
+            "help_text": "Whether to overwrite or create a new system or configuration",
+        },
+        "system name": {
+            "default": "use SMILES string",
+            "kind": "string",
+            "default_units": "",
+            "enumeration": (
+                "keep current name",
+                "use SMILES string",
+                "use Canonical SMILES string",
+            ),
+            "format_string": "s",
+            "description": "System name:",
+            "help_text": "The name for the new system",
+        },
+        "configuration name": {
+            "default": "use SMILES string",
+            "kind": "string",
+            "default_units": "",
+            "enumeration": (
+                "keep current name",
+                "use SMILES string",
+                "use Canonical SMILES string",
+            ),
+            "format_string": "s",
+            "description": "Configuration name:",
+            "help_text": "The name for the new configuration",
         },
     }
 
@@ -48,6 +67,5 @@ class FromSMILESParameters(seamm.Parameters):
         parameters given in the class"""
 
         super().__init__(
-            defaults={**FromSMILESParameters.parameters, **defaults},
-            data=data
+            defaults={**FromSMILESParameters.parameters, **defaults}, data=data
         )

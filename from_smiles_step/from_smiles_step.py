@@ -10,12 +10,9 @@ import from_smiles_step
 
 class FromSMILESStep(object):
     my_description = {
-        'description':
-            'Creates a 3D molecular structure from a SMILES string.',
-        'group':
-            'Building',
-        'name':
-            'from SMILES'
+        "description": "Creates a 3D molecular structure from a SMILES string.",
+        "group": "Building",
+        "name": "from SMILES",
     }
 
     def __init__(self, flowchart=None, gui=None):
@@ -26,8 +23,7 @@ class FromSMILESStep(object):
         pass
 
     def description(self):
-        """Return a description of what this extension does
-        """
+        """Return a description of what this extension does"""
         return FromSMILESStep.my_description
 
     def create_node(self, flowchart=None, **kwargs):
