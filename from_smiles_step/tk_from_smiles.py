@@ -40,7 +40,12 @@ class TkFromSMILES(seamm.TkNode):
 
         widgets = []
         row = 0
-        for item in ("smiles string", "handling", "system name", "configuration name"):
+        for item in (
+            "smiles string",
+            "structure handling",
+            "system name",
+            "configuration name",
+        ):
             self[item].grid(row=row, column=0, columnspan=2, sticky=tk.EW)
             widgets.append(self[item])
             row += 1

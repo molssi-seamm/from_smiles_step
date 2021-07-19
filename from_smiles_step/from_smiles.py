@@ -67,7 +67,7 @@ class FromSMILES(seamm.Node):
         else:
             text = "Create the structure from the SMILES '{smiles string}', "
 
-        handling = P["handling"]
+        handling = P["structure handling"]
         if handling == "Overwrite the current configuration":
             text += "overwriting the current configuration."
         elif handling == "Create a new configuration":
@@ -122,7 +122,7 @@ class FromSMILES(seamm.Node):
         # Get the system
         system_db = self.get_variable("_system_db")
 
-        handling = P["handling"]
+        handling = P["structure handling"]
         if handling == "Overwrite the current configuration":
             system = system_db.system
             if system is None:
