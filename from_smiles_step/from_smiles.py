@@ -159,7 +159,6 @@ class FromSMILES(seamm.Node):
             system.name = name
 
         name = P["configuration name"]
-        canonical_smiles = None
         if name != "keep current name":
             if name == "use SMILES string":
                 name = P["smiles string"]
