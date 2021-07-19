@@ -19,27 +19,7 @@ class FromSMILESParameters(seamm.Parameters):
             "enumeration": tuple(),
             "format_string": "s",
             "description": "SMILES:",
-            "help_text": ("The SMILES string for the structure.")
-        },
-        "minimize": {
-            "default": "no",
-            "kind": "boolean",
-            "default_units": "",
-            "enumeration": ("yes", "no"),
-            "format_string": "s",
-            "description": "Minimize the structure:",
-            "help_text": ("Whether to minimize the structure using one "
-                          "of the forcefields supported by OpenBabel.")
-        },
-        "forcefield": {
-            "default": "UFF",
-            "kind": "enumeration",
-            "default_units": "",
-            "enumeration": ("UFF", "GAFF", "MMFF94", "MMFF94s", "Ghemical"),
-            "format_string": "s",
-            "description": "Forcefield:",
-            "help_text": ("The forcefield to use when minimizing the "
-                          "structure.")
+            "help_text": ("The SMILES string for the structure."),
         },
     }
 
@@ -48,6 +28,10 @@ class FromSMILESParameters(seamm.Parameters):
         parameters given in the class"""
 
         super().__init__(
-            defaults={**FromSMILESParameters.parameters, **defaults},
-            data=data
+            defaults={
+                **FromSMILESParameters.parameters,
+                **seamm.standard_parameters.structure_handling_parameters,
+                **defaults,
+            },
+            data=data,
         )

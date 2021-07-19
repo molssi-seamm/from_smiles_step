@@ -2,76 +2,47 @@
 
 """a node to create a structure from a SMILES string"""
 
-import from_smiles_step
 import logging
-import os.path
-import pprint
+from pathlib import Path
+import shutil
+import string
+import subprocess
+import traceback
+
+import from_smiles_step
 import seamm
-import seamm_util
 import seamm_util.printing as printing
 from seamm_util.printing import FormattedText as __
 
 logger = logging.getLogger(__name__)
 job = printing.getPrinter()
-printer = printing.getPrinter('from_smiles')
+printer = printing.getPrinter("from_smiles")
 
 
 class FromSMILES(seamm.Node):
-
     def __init__(self, flowchart=None, extension=None):
-        '''Initialize a specialized start node, which is the
+        """Initialize a specialized start node, which is the
         anchor for the graph.
 
         Keyword arguments:
-        '''
-        logger.debug('Creating FromSMILESNode {}'.format(self))
+        """
+        logger.debug("Creating FromSMILESNode {}".format(self))
 
         super().__init__(
-            flowchart=flowchart,
-            title='from SMILES',
-            extension=extension,
-            logger=logger
+            flowchart=flowchart, title="from SMILES", extension=extension, logger=logger
         )
 
         self.parameters = from_smiles_step.FromSMILESParameters()
 
     @property
     def version(self):
-        """The semantic version of this module.
-        """
+        """The semantic version of this module."""
         return from_smiles_step.__version__
 
     @property
     def git_revision(self):
-        """The git version of this module.
-        """
+        """The git version of this module."""
         return from_smiles_step.__git_revision__
-
-    def create_parser(self):
-        """Setup the command-line / config file parser
-        """
-        parser_name = 'from-smiles-step'
-        parser = seamm_util.getParser()
-
-        # Remember if the parser exists ... this type of step may have been
-        # found before
-        parser_exists = parser.exists(parser_name)
-
-        # Create the standard options, e.g. log-level
-        result = super().create_parser(name=parser_name)
-
-        if parser_exists:
-            return result
-
-        # Options for OpenBabel
-        parser.add_argument(
-            parser_name,
-            '--openbabel-path',
-            default='',
-            help='the path to the OpenBabel executables'
-        )
-
-        return result
 
     def description_text(self, P=None):
         """Return a short description of this step.
@@ -88,49 +59,55 @@ class FromSMILES(seamm.Node):
         if not P:
             P = self.parameters.values_to_dict()
 
-        if P['smiles string'][0] == '$':
+        if P["smiles string"][0] == "$":
             text = (
                 "Create the structure from the SMILES in the variable"
-                " '{smiles string}'."
+                " '{smiles string}', "
             )
         else:
-            text = "Create the structure from the SMILES '{smiles string}'"
+            text = "Create the structure from the SMILES '{smiles string}', "
 
-        if isinstance(P['minimize'], bool) and P['minimize']:
-            text += "The structure will be minimized"
-            text += " with the '{forcefield}' forcefield."
-        elif isinstance(P['minimize'], str) and P['minimize'][0] == '$':
-            text += "The structure will be minimized if '{minimize}' is true"
-            text += " with the '{forcefield}' forcefield."
+        handling = P["structure handling"]
+        if handling == "Overwrite the current configuration":
+            text += "overwriting the current configuration."
+        elif handling == "Create a new configuration":
+            text += "creating a new configuration for it."
+        elif handling == "Create a new system and configuration":
+            text += "creating a new system and configuration for it."
+        else:
+            raise ValueError(
+                f"Do not understand how to handle the structure: '{handling}'"
+            )
 
-        return self.header + '\n' + __(text, **P, indent=4 * ' ').__str__()
+        sysname = P["system name"]
+        if sysname == "use SMILES string":
+            text += " The name of the system will be the SMILES string given."
+        elif sysname == "use Canonical SMILES string":
+            text += (
+                " The name of the system will be the canonical SMILES of the"
+                " structure."
+            )
+        else:
+            text += f" The name of the system will be {sysname}."
+
+        confname = P["configuration name"]
+        if confname == "use SMILES string":
+            text += " The name of the configuration will be the SMILES string given."
+        elif confname == "use Canonical SMILES string":
+            text += (
+                " The name of the configuration will be the canonical SMILES of the"
+                " structure."
+            )
+        else:
+            text += f" The name of the configuration will be {confname}."
+
+        return self.header + "\n" + __(text, **P, indent=4 * " ").__str__()
 
     def run(self):
-        """Create 3-D structure from a SMILES string
-
-        The atom ordering is a problem, since SMILES keeps hydrogens
-        implicitly, so they tend to be added after the heavy atoms. If
-        we keep them explicitly, for instance by tricking SMILES by
-        using At for H, then the atom order is changed, which is not
-        good.
-
-        To avoid this we will use explict H's (labeled as At's). Since
-        OpenBabel will not directly convert SMILES to SMILES with
-        explicit H's, we use a molfile as an intermediate.
-
-        Equivalent command line is like: ::
-            echo 'CCO' | obabel --gen3d -ismi -omol | obabel -imol -osmi -xh\
-                  | obabel --gen3d -ismi -opcjson
-        """
-        self.logger.debug('Entering from_smiles:run')
+        """Create 3-D structure from a SMILES string"""
+        self.logger.debug("Entering from_smiles:run")
 
         next_node = super().run(printer)
-
-        parser = seamm_util.getParser()
-        options = parser.get_options('from-smiles-step')
-
-        obabel_exe = os.path.join(options['openbabel_path'], 'obabel')
-        obminimize_exe = os.path.join(options['openbabel_path'], 'obminimize')
 
         P = self.parameters.current_values_to_dict(
             context=seamm.flowchart_variables._data
@@ -139,109 +116,123 @@ class FromSMILES(seamm.Node):
         # Print what we are doing
         printer.important(self.description_text(P))
 
-        if P['smiles string'] is None or P['smiles string'] == '':
+        if P["smiles string"] is None or P["smiles string"] == "":
             return None
 
         # Get the system
-        system_db = self.get_variable('_system_db')
-        configuration = system_db.system.configuration
-        configuration.clear()
+        system_db = self.get_variable("_system_db")
 
-        local = seamm.ExecLocal()
-        smiles = P['smiles string']
-
-        result = local.run(
-            cmd=[obabel_exe, '--gen3d', '-ismi', '-omol'], input_data=smiles
-        )
-
-        self.logger.log(0, pprint.pformat(result))
-
-        if int(result['stderr'].split()[0]) == 0:
-            return None
-
-        self.logger.debug('***Intermediate molfile from obabel')
-        self.logger.debug(result['stdout'])
-
-        mol = result['stdout']
-        result = local.run(
-            cmd=[obabel_exe, '-imol', '-osmi', '-xh'], input_data=mol
-        )
-
-        self.logger.log(0, pprint.pformat(result))
-
-        if int(result['stderr'].split()[0]) == 0:
-            return None
-
-        smiles = result['stdout'].strip()
-        self.logger.info(f"SMILES with Hs from obabel: '{smiles}'")
-
-        if P['minimize']:
-            # from SMILES to mol2
-            result = local.run(
-                cmd=[obabel_exe, '--gen3d', '-ismi', '-omol2'],
-                input_data=smiles
-            )
-
-            # self.logger.log(0, pprint.pformat(result))
-            self.logger.debug('***Intermediate mol2 file from obabel')
-            self.logger.debug(result['stdout'])
-
-            if int(result['stderr'].split()[0]) == 0:
-                return None
-
-            files = {}
-            files['input.mol2'] = result['stdout']
-
-            # minimize
-            result = local.run(
-                cmd=[
-                    obminimize_exe, '-o', 'mol2', '-ff', P['forcefield'],
-                    'input.mol2'
-                ],
-                files=files
-            )
-
-            # self.logger.log(0, pprint.pformat(result))
-            self.logger.debug('***Intermediate mol2 from obminimize')
-            self.logger.debug(result['stdout'])
-            mol2 = result['stdout']
-
-            result = local.run(
-                cmd=[obabel_exe, '-imol2', '-omol', '-x3'], input_data=mol2
-            )
-            if int(result['stderr'].split()[0]) == 0:
-                return None
-
-            configuration.from_molfile_text(result['stdout'])
-            configuration.name = smiles
+        handling = P["structure handling"]
+        if handling == "Overwrite the current configuration":
+            system = system_db.system
+            if system is None:
+                system = system_db.create_system()
+            configuration = system.configuration
+            if configuration is None:
+                configuration = system.create_configuration()
+            configuration.clear()
+        elif handling == "Create a new configuration":
+            system = system_db.system
+            if system is None:
+                system = system_db.create_system()
+            configuration = system.create_configuration()
+        elif handling == "Create a new system and configuration":
+            system = system_db.create_system()
+            configuration = system.create_configuration()
         else:
-            result = local.run(
-                cmd=[obabel_exe, '--gen3d', '-ismi', '-omol', '-x3'],
-                input_data=smiles
+            raise ValueError(
+                f"Do not understand how to handle the structure: '{handling}'"
             )
 
-            self.logger.log(0, pprint.pformat(result))
+        # Create the structure in the given configuration
+        configuration.from_smiles(P["smiles string"])
 
-            if int(result['stderr'].split()[0]) == 0:
-                return None
+        # Now set the names of the system and configuration, as appropriate.
+        name = P["system name"]
+        canonical_smiles = None
+        if name != "keep current name":
+            if name == "use SMILES string":
+                name = P["smiles string"]
+            elif name == "use Canonical SMILES string":
+                name = configuration.canonical_smiles
+                canonical_smiles = name
+            system.name = name
 
-            self.logger.debug('***Structure from obabel')
-            self.logger.debug(result['stdout'])
-
-            configuration.from_molfile_text(result['stdout'])
-            configuration.name = smiles
-
-        self.logger.debug('\n***Configuration')
-        self.logger.debug(str(configuration))
+        name = P["configuration name"]
+        if name != "keep current name":
+            if name == "use SMILES string":
+                name = P["smiles string"]
+            elif name == "use Canonical SMILES string":
+                if canonical_smiles is None:
+                    name = configuration.canonical_smiles
+                else:
+                    name = canonical_smiles
+            configuration.name = name
 
         # Finish the output
         printer.important(
             __(
-                "    Created a molecular structure with {n_atoms} atoms.\n",
-                n_atoms=configuration.n_atoms,
-                indent='    '
+                f"\n    Created a molecular structure with {configuration.n_atoms} "
+                "atoms."
+                f"\n           System name = {system.name}"
+                f"\n    Configuration name = {configuration.name}",
+                indent=4 * " ",
             )
         )
-        printer.important('')
+        printer.important("")
+
+        # Add the citations for Open Babel
+        self.references.cite(
+            raw=self._bibliography["openbabel"],
+            alias="openbabel_jcinf",
+            module="from_smiles_step",
+            level=1,
+            note="The principle Open Babel citation.",
+        )
+
+        # See if we can get the version of obabel
+        path = shutil.which("obabel")
+        if path is not None:
+            path = Path(path).expanduser().resolve()
+            try:
+                result = subprocess.run(
+                    [str(path), "--version"],
+                    stdin=subprocess.DEVNULL,
+                    capture_output=True,
+                    text=True,
+                )
+            except Exception:
+                version = "unknown"
+            else:
+                version = "unknown"
+                lines = result.stdout.splitlines()
+                for line in lines:
+                    line = line.strip()
+                    tmp = line.split()
+                    if len(tmp) == 9 and tmp[0] == "Open":
+                        version = tmp[2]
+                        month = tmp[4]
+                        year = tmp[6]
+                        break
+
+            if version != "unknown":
+                try:
+                    template = string.Template(self._bibliography["obabel"])
+
+                    citation = template.substitute(
+                        month=month, version=version, year=year
+                    )
+
+                    self.references.cite(
+                        raw=citation,
+                        alias="obabel-exe",
+                        module="from_smiles_step",
+                        level=1,
+                        note="The principle citation for the Open Babel executables.",
+                    )
+
+                except Exception as e:
+                    printer.important(f"Exception in citation {type(e)}: {e}")
+                    printer.important(traceback.format_exc())
 
         return next_node
