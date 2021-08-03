@@ -1,0 +1,27 @@
+{
+    "creators": [
+        {   
+            "name": "Saxe, Paul",
+            "orcid": "0000-0002-8641-9448",
+            "affiliation": "Molecular Sciences Software Institute"
+        }
+    ],    
+
+    "license": "BSD 3-Clause License",
+
+    "title": "Plug-in for SEAMM to create structures from SMILES",
+
+    "keywords": ["computational chemistry", "computational materials science"],
+
+    "description": "<p>Provides a step in a flowchart for converting a specification of a molecule using SMILES into a 3-D structure suitable as input for for simulations.</p>",
+
+    "communities": [
+        {"identifier": "molssi"},
+        {"identifier": "seamm"},
+        {"identifier": "seamm-plug-ins"},
+    ],
+
+    "grants": [{"id": "10.13039/100000001::1547580"}, {"id": "10.13039/100000001::2136142"}],
+
+    "notes": "Funding: NSF OAC-1547580 and CHE-2136142"
+}
