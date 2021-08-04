@@ -26,6 +26,9 @@
    :target: https://pypi.python.org/pypi/from_smiles_step
    :alt: PyPi VERSION
 
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.5159800.svg
+   :target: https://doi.org/10.5281/zenodo.5159800
+   :alt: DOI
 =========================
 SEAMM From SMILES plug-in
 =========================
