@@ -7,7 +7,7 @@
         }
     ],    
 
-    "license": "BSD 3-Clause License",
+    "license": "BSD-3-Clause",
 
     "title": "Plug-in for SEAMM to create structures from SMILES",
 
