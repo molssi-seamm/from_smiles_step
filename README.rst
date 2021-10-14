@@ -29,6 +29,7 @@
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.5159800.svg
    :target: https://doi.org/10.5281/zenodo.5159800
    :alt: DOI
+
 =========================
 SEAMM From SMILES plug-in
 =========================
@@ -64,7 +65,7 @@ This package was created with Cookiecutter_ and the `molssi-seamm/cookiecutter-s
 
 Developed by the Molecular Sciences Software Institute (MolSSI_),
 which receives funding from the `National Science Foundation`_ under
-award ACI-1547580
+award OAC-1547580 and CHE-2136142.
 
 .. _MolSSI: https://www.molssi.org
 .. _`National Science Foundation`: https://www.nsf.gov
