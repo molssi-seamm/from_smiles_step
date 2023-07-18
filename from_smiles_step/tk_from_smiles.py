@@ -41,6 +41,7 @@ class TkFromSMILES(seamm.TkNode):
         widgets = []
         row = 0
         for item in (
+            "notation",
             "smiles string",
             "structure handling",
             "system name",
