@@ -2,6 +2,8 @@
 History
 =======
 
+2023.7.18 -- Added support for InChI and InChIKeys
+
 2021.2.10 (10 February 2021)
 ----------------------------
 

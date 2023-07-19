@@ -12,14 +12,23 @@ class FromSMILESParameters(seamm.Parameters):
     """The control parameters for creating a structure from SMILES"""
 
     parameters = {
+        "notation": {
+            "default": "perceive",
+            "kind": "enum",
+            "default_units": "",
+            "enumeration": ("perceive", "SMILES", "InChI", "InChIKey"),
+            "format_string": "s",
+            "description": "Input notation:",
+            "help_text": "The line notation used.",
+        },
         "smiles string": {
             "default": "",
             "kind": "string",
             "default_units": "",
             "enumeration": tuple(),
             "format_string": "s",
-            "description": "SMILES:",
-            "help_text": ("The SMILES string for the structure."),
+            "description": "Input:",
+            "help_text": "The input string for the structure.",
         },
     }
 

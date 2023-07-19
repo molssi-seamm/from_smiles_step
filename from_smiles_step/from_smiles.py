@@ -59,13 +59,25 @@ class FromSMILES(seamm.Node):
         if not P:
             P = self.parameters.values_to_dict()
 
-        if P["smiles string"][0] == "$":
-            text = (
-                "Create the structure from the SMILES in the variable"
-                " '{smiles string}', "
-            )
+        if P["notation"] == "perceive":
+            if P["smiles string"][0] == "$":
+                text = (
+                    "Perceive the line notation (SMILES, InChI,...) and create the "
+                    "structure from the string in the variable '{smiles string}', "
+                )
+            else:
+                text = (
+                    "Perceive the line notation (SMILES, InChI,...) and create the "
+                    "structure from the string '{smiles string}', "
+                )
         else:
-            text = "Create the structure from the SMILES '{smiles string}', "
+            if P["smiles string"][0] == "$":
+                text = (
+                    "Create the structure from the {notation} in the variable"
+                    " '{smiles string}', "
+                )
+            else:
+                text = "Create the structure from the {notation} '{smiles string}', "
 
         handling = P["structure handling"]
         if handling == "Overwrite the current configuration":
@@ -119,6 +131,8 @@ class FromSMILES(seamm.Node):
         if P["smiles string"] is None or P["smiles string"] == "":
             return None
 
+        notation = P["notation"]
+
         # Get the system
         system_db = self.get_variable("_system_db")
 
@@ -145,17 +159,45 @@ class FromSMILES(seamm.Node):
             )
 
         # Create the structure in the given configuration
-        configuration.from_smiles(P["smiles string"])
+        text = P["smiles string"]
+        if notation == "perceive":
+            if len(text) == 27:
+                tmp = text.split("-")
+                if (
+                    len(tmp) == 3
+                    and len(tmp[0]) == 14
+                    and len(tmp[1]) == 10
+                    and len(tmp[2]) == 1
+                ):
+                    notation = "InChIKey"
+        if notation == "perceive":
+            if text[0:7] == "InChI=":
+                notation = "InChI"
+            else:
+                notation = "SMILES"
+
+        if notation == "SMILES":
+            configuration.from_smiles(text)
+        elif notation == "InChI":
+            configuration.from_inchi(text)
+        elif notation == "InChIKey":
+            configuration.from_inchikey(text)
+        else:
+            raise RuntimeError(f"Can not handle line notation '{text}'")
 
         # Now set the names of the system and configuration, as appropriate.
         name = P["system name"]
         canonical_smiles = None
         if name != "keep current name":
             if name == "use SMILES string":
-                name = P["smiles string"]
+                name = configuration.smiles
             elif name == "use Canonical SMILES string":
                 name = configuration.canonical_smiles
                 canonical_smiles = name
+            elif name == "use InChI":
+                name = configuration.inchi
+            elif name == "use InChIKey":
+                name = configuration.inchikey
             system.name = name
 
         name = P["configuration name"]
@@ -167,6 +209,10 @@ class FromSMILES(seamm.Node):
                     name = configuration.canonical_smiles
                 else:
                     name = canonical_smiles
+            elif name == "use InChI":
+                name = configuration.inchi
+            elif name == "use InChIKey":
+                name = configuration.inchikey
             configuration.name = name
 
         # Finish the output
