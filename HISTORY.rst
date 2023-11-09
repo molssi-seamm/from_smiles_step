@@ -2,6 +2,10 @@
 History
 =======
 
+2023.11.9 -- Improved structure handling, added from names
+    * Switched to standard structure handling, which adds more options
+    * Added getting structures from Pubchem using the chemical name.
+      
 2023.7.18 -- Added support for InChI and InChIKeys
 
 2021.2.10 (10 February 2021)

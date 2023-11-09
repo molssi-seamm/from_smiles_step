@@ -16,7 +16,7 @@ class FromSMILESParameters(seamm.Parameters):
             "default": "perceive",
             "kind": "enum",
             "default_units": "",
-            "enumeration": ("perceive", "SMILES", "InChI", "InChIKey"),
+            "enumeration": ("perceive", "SMILES", "InChI", "InChIKey", "name"),
             "format_string": "s",
             "description": "Input notation:",
             "help_text": "The line notation used.",
@@ -44,3 +44,14 @@ class FromSMILESParameters(seamm.Parameters):
             },
             data=data,
         )
+
+        # Do any local editing of defaults
+        tmp = self["structure handling"]
+        tmp.description = "Structure handling:"
+
+        tmp = self["system name"]
+        tmp.default = "use Canonical SMILES string"
+
+        tmp = self["configuration name"]
+        tmp._data["enumeration"] = ["initial", *tmp.enumeration]
+        tmp.default = "initial"
