@@ -79,39 +79,7 @@ class FromSMILES(seamm.Node):
             else:
                 text = "Create the structure from the {notation} '{smiles string}', "
 
-        handling = P["structure handling"]
-        if handling == "Overwrite the current configuration":
-            text += "overwriting the current configuration."
-        elif handling == "Create a new configuration":
-            text += "creating a new configuration for it."
-        elif handling == "Create a new system and configuration":
-            text += "creating a new system and configuration for it."
-        else:
-            raise ValueError(
-                f"Do not understand how to handle the structure: '{handling}'"
-            )
-
-        sysname = P["system name"]
-        if sysname == "use SMILES string":
-            text += " The name of the system will be the SMILES string given."
-        elif sysname == "use Canonical SMILES string":
-            text += (
-                " The name of the system will be the canonical SMILES of the"
-                " structure."
-            )
-        else:
-            text += f" The name of the system will be {sysname}."
-
-        confname = P["configuration name"]
-        if confname == "use SMILES string":
-            text += " The name of the configuration will be the SMILES string given."
-        elif confname == "use Canonical SMILES string":
-            text += (
-                " The name of the configuration will be the canonical SMILES of the"
-                " structure."
-            )
-        else:
-            text += f" The name of the configuration will be {confname}."
+        text += seamm.standard_parameters.structure_handling_description(P)
 
         return self.header + "\n" + __(text, **P, indent=4 * " ").__str__()
 
@@ -134,29 +102,7 @@ class FromSMILES(seamm.Node):
         notation = P["notation"]
 
         # Get the system
-        system_db = self.get_variable("_system_db")
-
-        handling = P["structure handling"]
-        if handling == "Overwrite the current configuration":
-            system = system_db.system
-            if system is None:
-                system = system_db.create_system()
-            configuration = system.configuration
-            if configuration is None:
-                configuration = system.create_configuration()
-            configuration.clear()
-        elif handling == "Create a new configuration":
-            system = system_db.system
-            if system is None:
-                system = system_db.create_system()
-            configuration = system.create_configuration()
-        elif handling == "Create a new system and configuration":
-            system = system_db.create_system()
-            configuration = system.create_configuration()
-        else:
-            raise ValueError(
-                f"Do not understand how to handle the structure: '{handling}'"
-            )
+        system, configuration = self.get_system_configuration(P)
 
         # Create the structure in the given configuration
         text = P["smiles string"]
@@ -175,45 +121,39 @@ class FromSMILES(seamm.Node):
                 notation = "InChI"
             else:
                 notation = "SMILES"
+                # Some characters are not valid in SMILES
+                # fmt: off
+                for c in (
+                    "d", "f", "g", "h", "i", "j", "k", "l", "m",
+                    "q", "r", "t", "u", "v", "w", "x", "y", "z"
+                ):
+                    # fmt: on
+                    if c in text:
+                        notation = "name"
+                        break
 
         if notation == "SMILES":
-            configuration.from_smiles(text)
+            if P["notation"] == "perceive":
+                try:
+                    # See if it is a name...
+                    configuration.PC_from_identifier(text, namespace="name")
+                except Exception as e:
+                    print(f"PubCHem exception {e}")
+                    # SMILES?
+                    configuration.from_smiles(text, rdkit=True)
+            else:
+                configuration.from_smiles(text)
         elif notation == "InChI":
             configuration.from_inchi(text)
         elif notation == "InChIKey":
             configuration.from_inchikey(text)
+        elif notation == "name":
+            configuration.PC_from_identifier(text, namespace="name")
         else:
             raise RuntimeError(f"Can not handle line notation '{text}'")
 
         # Now set the names of the system and configuration, as appropriate.
-        name = P["system name"]
-        canonical_smiles = None
-        if name != "keep current name":
-            if name == "use SMILES string":
-                name = configuration.smiles
-            elif name == "use Canonical SMILES string":
-                name = configuration.canonical_smiles
-                canonical_smiles = name
-            elif name == "use InChI":
-                name = configuration.inchi
-            elif name == "use InChIKey":
-                name = configuration.inchikey
-            system.name = name
-
-        name = P["configuration name"]
-        if name != "keep current name":
-            if name == "use SMILES string":
-                name = P["smiles string"]
-            elif name == "use Canonical SMILES string":
-                if canonical_smiles is None:
-                    name = configuration.canonical_smiles
-                else:
-                    name = canonical_smiles
-            elif name == "use InChI":
-                name = configuration.inchi
-            elif name == "use InChIKey":
-                name = configuration.inchikey
-            configuration.name = name
+        seamm.standard_parameters.set_names(system, configuration, P, _first=True)
 
         # Finish the output
         printer.important(
