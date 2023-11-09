@@ -121,28 +121,9 @@ class FromSMILES(seamm.Node):
                 notation = "InChI"
             else:
                 notation = "SMILES"
-                # Some characters are not valid in SMILES
-                # fmt: off
-                for c in (
-                    "d", "f", "g", "h", "i", "j", "k", "l", "m",
-                    "q", "r", "t", "u", "v", "w", "x", "y", "z"
-                ):
-                    # fmt: on
-                    if c in text:
-                        notation = "name"
-                        break
 
         if notation == "SMILES":
-            if P["notation"] == "perceive":
-                try:
-                    # See if it is a name...
-                    configuration.PC_from_identifier(text, namespace="name")
-                except Exception as e:
-                    print(f"PubCHem exception {e}")
-                    # SMILES?
-                    configuration.from_smiles(text, rdkit=True)
-            else:
-                configuration.from_smiles(text)
+            configuration.from_smiles(text)
         elif notation == "InChI":
             configuration.from_inchi(text)
         elif notation == "InChIKey":

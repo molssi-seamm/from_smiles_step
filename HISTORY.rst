@@ -2,6 +2,11 @@
 History
 =======
 
+2023.11.9.1 -- Removed using structure names when perceiving type
+    * Using structure names is too dangerous to use by perceiving if text is a name of
+      SMILES and there is no easy test for valid SMILES. So change to only using names
+      if the user specifies names.
+      
 2023.11.9 -- Improved structure handling, added from names
     * Switched to standard structure handling, which adds more options
     * Added getting structures from Pubchem using the chemical name.
