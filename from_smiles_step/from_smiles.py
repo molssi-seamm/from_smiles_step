@@ -102,7 +102,7 @@ class FromSMILES(seamm.Node):
         notation = P["notation"]
 
         # Get the system
-        system, configuration = self.get_system_configuration(P)
+        system, configuration = self.get_system_configuration(P, same_as=None)
 
         # Create the structure in the given configuration
         text = P["smiles string"]
