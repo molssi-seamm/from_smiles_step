@@ -2,6 +2,10 @@
 History
 =======
 
+2023.11.10 -- Bugfix: New configurations created incorrectly
+    * New configurations made from other systems could remove the atoms in those
+      systems.
+      
 2023.11.9.1 -- Removed using structure names when perceiving type
     * Using structure names is too dangerous to use by perceiving if text is a name of
       SMILES and there is no easy test for valid SMILES. So change to only using names
