@@ -123,13 +123,40 @@ class FromSMILES(seamm.Node):
                 notation = "SMILES"
 
         if notation == "SMILES":
-            configuration.from_smiles(text)
+            try:
+                configuration.from_smiles(text)
+            except Exception:
+                try:
+                    configuration.PC_from_identifier(text, namespace="name")
+                except Exception:
+                    raise RuntimeError(
+                        f"Can not create a structure from the string '{text}'"
+                        " as a SMILES or a chemical name."
+                    )
         elif notation == "InChI":
-            configuration.from_inchi(text)
+            try:
+                configuration.from_inchi(text)
+            except Exception:
+                raise RuntimeError(
+                    f"Can not create a structure from the string '{text}'"
+                    " as an InChI."
+                )
         elif notation == "InChIKey":
-            configuration.from_inchikey(text)
+            try:
+                configuration.from_inchikey(text)
+            except Exception:
+                raise RuntimeError(
+                    f"Can not create a structure from the string '{text}'"
+                    " as an InChIKey."
+                )
         elif notation == "name":
-            configuration.PC_from_identifier(text, namespace="name")
+            try:
+                configuration.PC_from_identifier(text, namespace="name")
+            except Exception:
+                raise RuntimeError(
+                    f"Can not create a structure from the string '{text}'"
+                    " as a chemical name."
+                )
         else:
             raise RuntimeError(f"Can not handle line notation '{text}'")
 
