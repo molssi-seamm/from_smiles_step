@@ -1,7 +1,10 @@
 =======
 History
 =======
-
+2024.10.31 -- Bugfix: Issue recognizing chemical names
+    * Fixed an issue where the chemical name was handled as SMILES, causing the code to
+      crash. 
+      
 2023.11.10 -- Bugfix: New configurations created incorrectly
     * New configurations made from other systems could remove the atoms in those
       systems.
