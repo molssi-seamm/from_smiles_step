@@ -128,7 +128,7 @@ class FromSMILES(seamm.Node):
         if notation == "SMILES":
             try:
                 configuration.from_smiles(text, flavor=flavor)
-            except Exception as e:
+            except Exception:
                 try:
                     configuration.PC_from_identifier(
                         text, namespace="smiles", properties=None
