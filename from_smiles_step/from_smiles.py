@@ -100,39 +100,51 @@ class FromSMILES(seamm.Node):
             return None
 
         notation = P["notation"]
+        flavor = P["smiles flavor"]
 
         # Get the system
         system, configuration = self.get_system_configuration(P, same_as=None)
 
         # Create the structure in the given configuration
         text = P["smiles string"]
+
+        # Perceive the notation if requested
+        perceived = False
         if notation == "perceive":
-            if len(text) == 27:
-                tmp = text.split("-")
-                if (
-                    len(tmp) == 3
-                    and len(tmp[0]) == 14
-                    and len(tmp[1]) == 10
-                    and len(tmp[2]) == 1
-                ):
-                    notation = "InChIKey"
-        if notation == "perceive":
-            if text[0:7] == "InChI=":
+            perceived = True
+            tmp = text.split("-")
+            if (
+                len(text) == 27
+                and len(tmp) == 3
+                and len(tmp[0]) == 14
+                and len(tmp[1]) == 10
+            ):
+                notation = "InChIKey"
+            elif text[0:7] == "InChI=":
                 notation = "InChI"
             else:
-                notation = "SMILES"
+                notation = "SMILES or name"
 
         if notation == "SMILES":
             try:
-                configuration.from_smiles(text)
+                configuration.from_smiles(text, flavor=flavor)
             except Exception:
                 try:
-                    configuration.PC_from_identifier(text, namespace="name")
-                except Exception:
-                    raise RuntimeError(
-                        f"Can not create a structure from the string '{text}'"
-                        " as a SMILES or a chemical name."
+                    configuration.PC_from_identifier(
+                        text, namespace="smiles", properties=None
                     )
+                    flavor = "PUBCHEM"
+                except Exception:
+                    # If using rdkit, try openbabel since it is more robust
+                    if flavor == "rdkit":
+                        try:
+                            configuration.from_smiles(text, flavor="openbabel")
+                            flavor = "openbabel"
+                        except Exception:
+                            raise RuntimeError(
+                                f"Can not create a structure from the string '{text}'"
+                                " as a SMILES."
+                            )
         elif notation == "InChI":
             try:
                 configuration.from_inchi(text)
@@ -157,6 +169,28 @@ class FromSMILES(seamm.Node):
                     f"Can not create a structure from the string '{text}'"
                     " as a chemical name."
                 )
+        elif notation == "SMILES or name":
+            try:
+                configuration.from_smiles(text, flavor=flavor)
+            except Exception:
+                try:
+                    configuration.PC_from_identifier(text, namespace="name")
+                    notation = "name"
+                except Exception:
+                    try:
+                        configuration.PC_from_identifier(text, namespace="smiles")
+                        notation = "SMILES"
+                    except Exception:
+                        # If using rdkit, try openbabel since it is more robust
+                        if flavor == "rdkit":
+                            flavor = "openbabel"
+                            try:
+                                configuration.from_smiles(text, flavor="openbabel")
+                            except Exception:
+                                raise RuntimeError(
+                                    "Can not create a structure from the string "
+                                    f"'{text}' as a SMILES."
+                                )
         else:
             raise RuntimeError(f"Can not handle line notation '{text}'")
 
@@ -164,10 +198,46 @@ class FromSMILES(seamm.Node):
         seamm.standard_parameters.set_names(system, configuration, P, _first=True)
 
         # Finish the output
+        if perceived:
+            if notation == "SMILES":
+                printer.important(
+                    __(
+                        "\n    Created a molecular structure with "
+                        f"{configuration.n_atoms} atoms from the perceived notation "
+                        f"{notation} using {flavor}.",
+                        indent=4 * " ",
+                    )
+                )
+            else:
+                printer.important(
+                    __(
+                        "\n    Created a molecular structure with "
+                        f"{configuration.n_atoms} atoms from the perceived notation "
+                        f"{notation}.",
+                        indent=4 * " ",
+                    )
+                )
+        else:
+            if notation == "SMILES":
+                printer.important(
+                    __(
+                        "\n    Created a molecular structure with "
+                        f"{configuration.n_atoms} atoms from the notation "
+                        f"{notation} using {flavor}.",
+                        indent=4 * " ",
+                    )
+                )
+            else:
+                printer.important(
+                    __(
+                        "\n    Created a molecular structure with "
+                        f"{configuration.n_atoms} atoms from the notation "
+                        f"{notation}.",
+                        indent=4 * " ",
+                    )
+                )
         printer.important(
             __(
-                f"\n    Created a molecular structure with {configuration.n_atoms} "
-                "atoms."
                 f"\n           System name = {system.name}"
                 f"\n    Configuration name = {configuration.name}",
                 indent=4 * " ",

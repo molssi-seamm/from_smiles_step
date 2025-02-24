@@ -43,6 +43,7 @@ class TkFromSMILES(seamm.TkNode):
         for item in (
             "notation",
             "smiles string",
+            "smiles flavor",
             "structure handling",
             "system name",
             "configuration name",

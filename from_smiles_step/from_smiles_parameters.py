@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Control parameters for generating a structure from SMILES
-"""
+"""Control parameters for generating a structure from SMILES"""
 
 import logging
 import seamm
@@ -29,6 +28,15 @@ class FromSMILESParameters(seamm.Parameters):
             "format_string": "s",
             "description": "Input:",
             "help_text": "The input string for the structure.",
+        },
+        "smiles flavor": {
+            "default": "rdkit",
+            "kind": "string",
+            "default_units": "",
+            "enumeration": ("rdkit", "openbabel", "openeye"),
+            "format_string": "s",
+            "description": "SMILES flavor:",
+            "help_text": "The flavor of SMILES to use.",
         },
     }
 
