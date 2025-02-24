@@ -5,8 +5,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>from_smiles_step.tk_from_smiles &mdash; SEAMM From SMILES Plug-in 2024.10.31 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>from_smiles_step.tk_from_smiles &mdash; SEAMM From SMILES Plug-in 2025.2.24 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=2868b858" />
 
@@ -21,7 +21,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=783251a9"></script>
+      <script src="../../_static/documentation_options.js?v=e5f64722"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -95,17 +95,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <span class="sd">&quot;&quot;&quot;The graphical part of a fromSMILES node&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">seamm</span>
-<span class="kn">import</span> <span class="nn">seamm_widgets</span> <span class="k">as</span> <span class="nn">sw</span>
-<span class="kn">import</span> <span class="nn">tkinter</span> <span class="k">as</span> <span class="nn">tk</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seamm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seamm_widgets</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sw</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tkinter</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tk</span>
 
 
 <div class="viewcode-block" id="TkFromSMILES">
 <a class="viewcode-back" href="../../api/from_smiles_step.html#from_smiles_step.tk_from_smiles.TkFromSMILES">[docs]</a>
-<span class="k">class</span> <span class="nc">TkFromSMILES</span><span class="p">(</span><span class="n">seamm</span><span class="o">.</span><span class="n">TkNode</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TkFromSMILES</span><span class="p">(</span><span class="n">seamm</span><span class="o">.</span><span class="n">TkNode</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The graphical part of the From SMILES step&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">tk_flowchart</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">canvas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">50</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a node</span>
@@ -118,7 +118,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <div class="viewcode-block" id="TkFromSMILES.right_click">
 <a class="viewcode-back" href="../../api/from_smiles_step.html#from_smiles_step.tk_from_smiles.TkFromSMILES.right_click">[docs]</a>
-    <span class="k">def</span> <span class="nf">right_click</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">right_click</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Probably need to add our dialog...&quot;&quot;&quot;</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">right_click</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
@@ -129,7 +129,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <div class="viewcode-block" id="TkFromSMILES.create_dialog">
 <a class="viewcode-back" href="../../api/from_smiles_step.html#from_smiles_step.tk_from_smiles.TkFromSMILES.create_dialog">[docs]</a>
-    <span class="k">def</span> <span class="nf">create_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a dialog for editing the SMILES string&quot;&quot;&quot;</span>
         <span class="n">frame</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">create_dialog</span><span class="p">(</span><span class="s2">&quot;Edit SMILES Step&quot;</span><span class="p">)</span>
 
@@ -143,6 +143,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">(</span>
             <span class="s2">&quot;notation&quot;</span><span class="p">,</span>
             <span class="s2">&quot;smiles string&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;smiles flavor&quot;</span><span class="p">,</span>
             <span class="s2">&quot;structure handling&quot;</span><span class="p">,</span>
             <span class="s2">&quot;system name&quot;</span><span class="p">,</span>
             <span class="s2">&quot;configuration name&quot;</span><span class="p">,</span>
