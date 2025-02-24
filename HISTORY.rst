@@ -1,6 +1,10 @@
 =======
 History
 =======
+2024.2.24 -- Added isomeric SMILES to structure names and ability to discard structures
+    * Added ability to ignore or discard a structure from e.g. optimization
+    * Added isomeric SMILES to the possible names for systems and configurations
+      
 2024.10.31 -- Bugfix: Issue recognizing chemical names
     * Fixed an issue where the chemical name was handled as SMILES, causing the code to
       crash. 
