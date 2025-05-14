@@ -3,13 +3,9 @@
 """a node to create a structure from a SMILES string"""
 
 import logging
-from pathlib import Path
-import shutil
-import string
-import subprocess
-import traceback
 
 import from_smiles_step
+import molsystem
 import seamm
 import seamm_util.printing as printing
 from seamm_util.printing import FormattedText as __
@@ -148,6 +144,7 @@ class FromSMILES(seamm.Node):
         elif notation == "InChI":
             try:
                 configuration.from_inchi(text)
+                flavor = "openbabel"
             except Exception:
                 raise RuntimeError(
                     f"Can not create a structure from the string '{text}'"
@@ -156,6 +153,7 @@ class FromSMILES(seamm.Node):
         elif notation == "InChIKey":
             try:
                 configuration.from_inchikey(text)
+                flavor = "openbabel"
             except Exception:
                 raise RuntimeError(
                     f"Can not create a structure from the string '{text}'"
@@ -164,6 +162,7 @@ class FromSMILES(seamm.Node):
         elif notation == "name":
             try:
                 configuration.PC_from_identifier(text, namespace="name")
+                flavor = "PubChem"
             except Exception:
                 raise RuntimeError(
                     f"Can not create a structure from the string '{text}'"
@@ -175,10 +174,12 @@ class FromSMILES(seamm.Node):
             except Exception:
                 try:
                     configuration.PC_from_identifier(text, namespace="name")
+                    flavor = "PubChem"
                     notation = "name"
                 except Exception:
                     try:
                         configuration.PC_from_identifier(text, namespace="smiles")
+                        flavor = "PubChem"
                         notation = "SMILES"
                     except Exception:
                         # If using rdkit, try openbabel since it is more robust
@@ -245,58 +246,25 @@ class FromSMILES(seamm.Node):
         )
         printer.important("")
 
-        # Add the citations for Open Babel
-        self.references.cite(
-            raw=self._bibliography["openbabel"],
-            alias="openbabel_jcinf",
-            module="from_smiles_step",
-            level=1,
-            note="The principle Open Babel citation.",
-        )
-
-        # See if we can get the version of obabel
-        path = shutil.which("obabel")
-        if path is not None:
-            path = Path(path).expanduser().resolve()
-            try:
-                result = subprocess.run(
-                    [str(path), "--version"],
-                    stdin=subprocess.DEVNULL,
-                    capture_output=True,
-                    text=True,
+        if flavor == "openbabel":
+            citations = molsystem.openbabel_citations()
+            for i, citation in enumerate(citations, start=1):
+                self.references.cite(
+                    raw=citation,
+                    alias=f"openbabel_{i}",
+                    module="from_smiles_step",
+                    level=1,
+                    note=f"The principle citation #{i} for OpenBabel.",
                 )
-            except Exception:
-                version = "unknown"
-            else:
-                version = "unknown"
-                lines = result.stdout.splitlines()
-                for line in lines:
-                    line = line.strip()
-                    tmp = line.split()
-                    if len(tmp) == 9 and tmp[0] == "Open":
-                        version = tmp[2]
-                        month = tmp[4]
-                        year = tmp[6]
-                        break
-
-            if version != "unknown":
-                try:
-                    template = string.Template(self._bibliography["obabel"])
-
-                    citation = template.substitute(
-                        month=month, version=version, year=year
-                    )
-
-                    self.references.cite(
-                        raw=citation,
-                        alias="obabel-exe",
-                        module="from_smiles_step",
-                        level=1,
-                        note="The principle citation for the Open Babel executables.",
-                    )
-
-                except Exception as e:
-                    printer.important(f"Exception in citation {type(e)}: {e}")
-                    printer.important(traceback.format_exc())
+        elif flavor == "rdkit":
+            citations = molsystem.rdkit_citations()
+            for i, citation in enumerate(citations, start=1):
+                self.references.cite(
+                    raw=citation,
+                    alias=f"rdkit_{i}",
+                    module="from_smiles_step",
+                    level=1,
+                    note=f"The principle citation #{i} for RDKit.",
+                )
 
         return next_node
