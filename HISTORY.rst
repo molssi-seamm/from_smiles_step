@@ -1,6 +1,9 @@
 =======
 History
 =======
+2025.5.14 -- Bugfix: Add references for RDKit
+    * Added citations when using RDKit instead of OpenBabel
+      
 2024.2.24 -- Added isomeric SMILES to structure names and ability to discard structures
     * Added ability to ignore or discard a structure from e.g. optimization
     * Added isomeric SMILES to the possible names for systems and configurations
